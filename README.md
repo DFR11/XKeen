@@ -43,7 +43,7 @@ opkg install ca-certificates wget-ssl tar
 wget "https://cdn.jsdelivr.net/gh/jameszeroX/XKeen@main/xkeen.tar" && tar -xvf xkeen.tar -C /opt/sbin --overwrite > /dev/null && rm xkeen.tar
 xkeen -i
 ```
-Установка [OffLine](https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md) 
+Установка [OffLine](https://github.com/DFR11/XKeen/blob/main/OffLine_install.md) 
 
 ## Поддержка
 Желающие угостить меня пивом, такую возможность имеют)
