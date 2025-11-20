@@ -1,25 +1,25 @@
 tests_connection() {
     result=1
     
-    # Проверка соединения с google.com
+    # Checking connection to google.com
     if ping -c 4 google.com > /dev/null 2>&1; then
         result=0
     else
-        echo -e "  ${red}Ошибка${reset}: google.com не отвечает на ping"
+        echo -e "${red}Error${reset}: google.com does not respond to ping"
     fi
 
-    # Проверка соединения с yandex.ru
+    # Checking connection to yandex.ru
     if ping -c 4 yandex.ru > /dev/null 2>&1; then
         result=0
     else
-        echo -e "  ${red}Ошибка${reset}: yandex.ru не отвечает на ping"
+        echo -e "${red}Error${reset}: yandex.ru does not respond to ping"
     fi
 
-    # Проверяем код завершения функции и выводим сообщение
+    # We check the function completion code and display a message
     if [ $result -eq 0 ]; then
-        echo -e "  Интернет-соединение ${green}работает${reset}"
+        echo -e "Internet connection ${green}working${reset}"
     else
-        echo -e "  ${red}Отсутствует${reset} интернет-соединение"
+        echo -e "${red}Missing${reset} internet connection"
     fi
 	
     return 1

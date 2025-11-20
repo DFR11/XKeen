@@ -1,27 +1,27 @@
-# Функция для установки XKeen
+# Function for installing XKeen
 install_xkeen() {
     xkeen_archive="${tmp_dir}/xkeen.tar.gz"
 
-    # Проверка наличия архива XKeen
+    # Checking the availability of the XKeen archive
     if [ -f "${xkeen_archive}" ]; then
         
-        # Временный скрипт для установки
+        # Temporary installation script
         install_script=$(mktemp)
         cat <<EOF > "${install_script}"
 #!/bin/sh
 
-# Распаковка архива
+# Unpacking archive
 tar -xzf "${xkeen_archive}" -C "${install_dir}" xkeen _xkeen
 
-# Проверка наличия _xkeen в install_dir и его перемещение
+# Checking for _xkeen in install_dir and moving it
 if [ -d "${install_dir}/_xkeen" ]; then
     rm -rf "${install_dir}/.xkeen"
     mv "${install_dir}/_xkeen" "${install_dir}/.xkeen"
 else
-    echo -e "  ${red}Ошибка${reset}: _xkeen не была правильно перенесена"
+    echo -e "${red}Error${reset}: _xkeen was not transferred correctly"
 fi
 
-# Удаление архива
+# Deleting an archive
 rm "${xkeen_archive}"
 EOF
 

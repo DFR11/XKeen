@@ -1,11 +1,11 @@
-# Регистрация XKeen
+# XKeen Registration
 
-# Функция для создания файла xkeen.control
+# Function to create xkeen.control file
 register_xkeen_control() {
 	script_dir="$(cd "$(dirname "$0")" && pwd)"
 	. "$script_dir/.xkeen/01_info/01_info_variable.sh"
 	
-    # Создание файла xkeen.control
+    # Creating the xkeen.control file
     cat << EOF > "$register_dir/xkeen.control"
 Package: xkeen
 Version: $xkeen_current_version
@@ -24,22 +24,22 @@ EOF
 register_xkeen_list() {
     cd "$register_dir/" || exit
 
-    # Создание файла xkeen.list
+    # Creating the xkeen.list file
     touch xkeen.list
 
-    # Генерация списка файлов и директорий
+    # Generating a list of files and directories
     find /opt/sbin/.xkeen -mindepth 1 | while read -r entry; do
         echo "$entry" >> xkeen.list
     done
 
-    # Добавление дополнительных путей
+    # Adding Additional Paths
     echo "/opt/sbin/xkeen" >> xkeen.list
     echo "/opt/sbin/.xkeen" >> xkeen.list
     echo "/opt/etc/init.d/S99xkeen" >> xkeen.list
 }
 
 register_xkeen_status() {
-    # Генерация новой записи
+    # Generating a new entry
     echo "Package: xkeen" > new_entry.txt
     echo "Version: $xkeen_current_version" >> new_entry.txt
     echo "Depends: jq, curl, lscpu, coreutils-uname, coreutils-nohup, iptables" >> new_entry.txt
@@ -47,10 +47,10 @@ register_xkeen_status() {
     echo "Architecture: $status_architecture" >> new_entry.txt
     echo "Installed-Time: $(date +%s)" >> new_entry.txt
 
-    # Чтение существующего содержимого файла "status"
+    # Reading the existing contents of the "status" file
     existing_content=$(cat "$status_file")
 
-    # Объединение существующего содержимого и новой записи
+    # Merging existing content and new entry
     printf "\n$(cat new_entry.txt)\n" >> "$status_file"
 }
 
@@ -119,7 +119,7 @@ register_xkeen_initd() {
     chmod +x "$initd_file"
 }
 
-# Миграция скрипта
+# Script migration
 register_xray_initd() {
     register_xkeen_initd
 }
@@ -127,7 +127,7 @@ register_autostart() {
     :
 }
 
-# Создание конфигурации XKeen
+# Creating an XKeen Configuration
 create_xkeen_cfg() {
     if [ ! -d "${xkeen_cfg}" ]; then
         mkdir -p "${xkeen_cfg}"
@@ -139,7 +139,7 @@ create_xkeen_cfg() {
 #192.168.0.0/16
 #2001:db8::/32
 
-# Добавьте необходимые IP и подсети без комментария # для исключения их из проксирования
+# Add the necessary IPs and subnets without comment # to exclude them from proxying
 EOF
     fi
 
@@ -147,8 +147,8 @@ EOF
         cat << EOF > "${xkeen_cfg}/port_exclude.lst"
 #
 
-# Одновременно использовать порты проксирования и исключать порты нельзя
-# Приоритет у портов проксирования
+# You cannot use proxy ports and exclude ports at the same time
+# Priority for proxy ports
 EOF
     fi
 
@@ -158,7 +158,7 @@ EOF
 #443
 #596:599
 
-# (Раскомментируйте/добавьте по образцу) единичные порты и диапазоны для проскирования
+# (Uncomment/add according to the example) single ports and ranges for scanning
 EOF
     fi
 }

@@ -1,75 +1,75 @@
 # Xray-Keenetic
 
 > [!WARNING]
-> Данный материал подготовлен в научно-технических целях. Утилита XKeen предназначена для управления межсетевым экраном роутера Keenetic, защищающим домашнюю сеть. Разработчик не несёт ответственности за иное её использование. Перед использованием XKeen убедитесь, что ваши действия соответствуют законодательству вашей страны. Использование XKeen в противоправных целях строго запрещено
+> This material was prepared for scientific and technical purposes. The XKeen utility is designed to manage the Keenetic router firewall, which protects your home network. The developer is not responsible for any other use of it. Before using XKeen, please ensure that your actions comply with the laws of your country. Using XKeen for illegal purposes is strictly prohibited
 
 > [!NOTE]
-> Установка XKeen гарантируется только на внешние USB-накопители, при этом установка на внутреннюю память роутера возможна, но требует знаний и опыта пользователя. Если возникли трудности с установкой на внутреннюю память, не сообщайте об этом, как об ошибке в установщике. Проблема не в XKeen
+> Installation of XKeen is guaranteed only on external USB drives, while installation on the internal memory of the router is possible, but requires the user’s knowledge and experience. If you have difficulties installing on internal memory, do not report it as a bug in the installer. The problem is not with XKeen
 
-## Версия 1.1.3.8
+## Version 1.1.3.8
 
-Сравнение форка с оригинальным XKeen
+Comparison of the fork with the original XKeen
 
-Изменения:
-- Исправлено добавление портов в исключения (ранее команду `xkeen -ape` нужно было прерывать по ctrl+c)
-- Исправлена совместная работа режима TProxy и socks5 (ранее Xkeen запускался в Mixed режиме, что приводило к неработоспособности прозрачного проксирования)
-- Исправлен автозапуск XKeen при старте роутера (ранее XKeen в некоторых случаях не запускался или запускался для всего устройства, а не только для своей политики - [FAQ п.12](https://jameszero.net/faq-xkeen.htm#12))
-- Переработана логика загрузки XKeen, Xray, Mihomo и GeoFile из интернета, уменьшающая вероятность их повреждения
-- Переработана логика применения правил iptables и ip6tables (ранее XKeen применял все правила, даже при не установленном компоненте IPv6)
-- Переработана логика добавления и удаления портов проксирования и исключаемых портов
-- При обновлении геофайлов, добавлении/удалении портов проксирования или портов исключений, а также выполнении других настроек, требующих перезапуск XKeen, прокси-клиент теперь перезапускается если был до этого запущен
-- При запуске `xkeen -d` без цифрового параметра, теперь отображается информация о текущей задержке автозапуска
-- При запуске или перезапуске XKeen теперь отображается информация о режиме работы - TProxy, Mixed, Redirect, Other
-- Не актуальные GeoSite и GeoIP antifilter-community заменены на базы [Re:filter](https://github.com/1andrevich/Re-filter-lists)
-- Объединены задачи планировщика по обновлению GeoSite и GeoIP. В связи с этим упразднены параметры запуска `-ugs`, `-ugi`, `-ugsc`, `-ugic`, `-dgsc`, `-dgic`
-- Параметр запуска `-ux` для обновления ядра Xray теперь поддерживает повышение/понижение версии
-- Корректная деинсталляция xray-core (ранее пакет xray не удалялся при деинсталляции)
-- Справка (`xkeen -h`) выровнена по табуляции и повышен контраст текста
-- Рефакторинг кода скриптов
-- Актуализация конфигурационных файлов xray-core
+Changes:
+- Fixed adding ports to exceptions (previously the `xkeen -ape` command had to be interrupted by ctrl+c)
+- Fixed the joint operation of TProxy and socks5 modes (previously Xkeen was launched in Mixed mode, which led to transparent proxying not working)
+- Fixed autostart of XKeen when the router starts (previously XKeen in some cases did not start or was launched for the entire device, and not just for its policy - [FAQ p. 12](https://jameszero.net/faq-xkeen.htm#12))
+- The logic for downloading XKeen, Xray, Mihomo and GeoFile from the Internet has been reworked, reducing the likelihood of their damage
+- The logic for applying iptables and ip6tables rules has been reworked (previously XKeen applied all rules, even when the IPv6 component was not installed)
+- The logic for adding and removing proxy ports and excluded ports has been reworked
+- When updating geofiles, adding/removing proxy ports or exclusion ports, as well as performing other settings that require restarting XKeen, the proxy client is now restarted if it was previously running
+- When running `xkeen -d` without a numeric parameter, information about the current autorun delay is now displayed
+- When starting or restarting XKeen, information about the operating mode is now displayed - TProxy, Mixed, Redirect, Other
+- Outdated GeoSite and GeoIP antifilter-community have been replaced with [Re:filter](https://github.com/1andrevich/Re-filter-lists) databases
+- The scheduler tasks for updating GeoSite and GeoIP have been combined. In this regard, the launch parameters `-ugs`, `-ugi`, `-ugsc`, `-ugic`, `-dgsc`, `-dgic` have been removed
+- The `-ux` startup option for Xray kernel upgrade now supports upgrading/downgrading
+- Correct uninstallation of xray-core (previously the xray package was not removed during uninstallation)
+- Help (`xkeen -h`) tab-aligned and increased text contrast
+- Refactoring script code
+- Updating xray-core configuration files
 
-Добавлено:
-- Поддержка ядра Mihomo
-- Возможность сменить ядро проксирования (Xray/Mihomo) параметрамии `-xray` и `-mihomo`
-- Возможность [OffLine установки](https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md) (параметр `-io`)
-- Возможность установки GeoIP базы [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip)
-- Обновление [zkeen.dat](https://github.com/jameszeroX/zkeen-domains) и [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip) по расписанию средствами XKeen
-- При недоступности GitHub API используется резервный источник релизов для XKeen, Xray и Mihomo 
-- При недоступности репозитория GitHub загрузка компонентов XKeen выполняется через прокси
-- Защита от случайного ввода дефиса вместо двоеточия при указании диапазона портов проксирования или портов исключений
+Added:
+- Mihomo kernel support
+- Ability to change the proxy kernel (Xray/Mihomo) with the `-xray` and `-mihomo` parameters
+- Possibility of [OffLine installation](https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md) (option `-io`)
+- Ability to install a GeoIP database [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip)
+- Update [zkeen.dat](https://github.com/jameszeroX/zkeen-domains) and [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip) on a schedule using XKeen
+- If the GitHub API is unavailable, a backup release source for XKeen, Xray and Mihomo is used
+- If the GitHub repository is unavailable, XKeen components are downloaded through a proxy
+- Protection against accidentally entering a hyphen instead of a colon when specifying a range of proxy ports or exclusion ports
 - Поддержка внешнего файла `/opt/etc/xkeen_exclude.lst` c IP-адресами и подсетями для исключения из проксирования ([образец](https://raw.githubusercontent.com/jameszeroX/xkeen/main/xkeen_exclude.lst))
-- При установке теперь можно выбрать, добавлять ли XKeen в автозагрузку при включении роутера или нет
-- При пропуске установки Xray, его конфигурационные файлы и геобазы так же пропускаются и не устанавливаются
-- Mihomo и парсер yaml-файлов Yq устанавливаются и регистрируются в entware, как полноценные ipk-пакеты
-- Параметр запуска `-remove` для полной деинсталляции XKeen (ранее деинсталляцию нужно было выполнять покомпонентно)
-- Параметры запуска `-ug` (обновление геофайлов), `-ugc` (управление заданием Cron, обновляющим геофайлы), `-dgc` (удаление задания Cron, обновляющего геофайлы)
-- Параметр запуска `-um` для обновления/установки ядра Mihomo (поддерживается повышение/понижение версии)
-- Параметры запуска: `-rrm` (обновить регистрацию Mihomo), `-drm` (удалить регистрацию Mihomo)
-- Параметр запуска `-dm` для деинсталляции ядра Mihomo
-- Параметр запуска `-g`, позволяющий переустановить (добавить/удалить) геофайлы для Xray
-- Параметр запуска `-channel`, позволяющий выбрать канал обновления XKeen между Stable и Dev ветками
-- Возможность резервного копирования и восстановления конфигурации Mihomo (параметры `-mb`, `-mbr`)
-- Возможность контролировать число открытых файловых дескрипторов, используемых прокси-клиентом и перезапускать процесс при исчерпании лимита  [подробнее](https://github.com/jameszeroX/XKeen/blob/main/FileDescriptors.md)
+- During installation, you can now choose whether to add XKeen to startup when you turn on the router or not
+- If you skip the installation of Xray, its configuration files and geobases are also skipped and not installed
+- Mihomo and the Yq yaml file parser are installed and registered in entware as full-fledged ipk packages
+- Launch option `-remove` to completely uninstall XKeen (previously you had to uninstall it piece by piece)
+- Error 500 (Server Error)!!1500.That’s an error.There was an error. Please try again later.That’s all we know.
+- Launch option `-um` to update/install Mihomo kernel (upgrade/downgrade supported)
+- Launch options: `-rrm` (update Mihomo registration), `-drm` (delete Mihomo registration)
+- Launch option `-dm` to uninstall the Mihomo kernel
+- Launch option `-g`, which allows you to reinstall (add/remove) geofiles for Xray
+- Launch parameter `-channel`, allowing you to select the XKeen update channel between the Stable and Dev branches
+- Ability to backup and restore Mihomo configuration (parameters `-mb`, `-mbr`)
+- Ability to control the number of open file descriptors used by the proxy client and restart the process when the limit is reached [more](https://github.com/jameszeroX/XKeen/blob/main/FileDescriptors.md)
 
-Удалено:
-- Возможность установки GeoSite Antizapret (база повреждена в репозитории)
-- Конфигурационный файл 02_transport.json (не используется новыми ядрами xray-core)
-- Запрос на перезапись и сама перезапись конфигурационных файлов Xray, если они уже существуют на момент установки XKeen
-- Создание резервных копий Xray, так как теперь можно интерактивно установить предыдущую версию ядра параметром `-ux`. В связи с этим упразднены параметры запуска `-xb` и `-xbr`
+Deleted:
+- Ability to install GeoSite Antizapret (the database is damaged in the repository)
+- Configuration file 02_transport.json (not used by new xray-cores)
+- Request to overwrite and overwrite Xray configuration files if they already exist at the time of XKeen installation
+- Create Xray backups, since you can now interactively install a previous version of the kernel with the `-ux` option. In this regard, the launch options `-xb` and `-xbr` have been removed
 - Логирование процесса установки XKeen в директорию `/opt/var/log/xkeen` (на практике не использовалось)
-- Задачи планировщика по автообновлению XKeen/Xray. В связи с этим упразднены параметры запуска `-uac`, `-ukc`, `-uxc`, `-dac`, `-dkc` и `-dxc`
-- Параметры запуска: `-x` (заменён на `-ux`), `-rk` (заменён на `-rrk`), `-rx` (заменён на `-rrx`), `-rc` (не актуален)
+- XKeen/Xray auto-update scheduler tasks. In this regard, the launch options `-uac`, `-ukc`, `-uxc`, `-dac`, `-dkc` and `-dxc` have been removed
+- Launch options: `-x` (replaced by `-ux`), `-rk` (replaced by `-rrk`), `-rx` (replaced by `-rrx`), `-rc` (not relevant)
 
-Все параметры запуска с их описанием доступны в справке по команде `xkeen -h`
+All launch parameters with their descriptions are available in the help for the `xkeen -h` command
 
-### Порядок установки
+### Installation procedure
 ```
 opkg update && opkg upgrade && opkg install curl tar
 curl -OL https://raw.githubusercontent.com/jameszeroX/XKeen/main/install.sh
 chmod +x install.sh
 ./install.sh
 ```
-Альтернативный вариант:
+Alternative:
 ```
 opkg update && opkg upgrade && opkg install curl tar
 curl -OL https://ghfast.top/https://github.com/jameszeroX/XKeen/releases/latest/download/xkeen.tar.gz
@@ -79,21 +79,21 @@ xkeen -i
 Установка [OffLine](https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md)
 
 
-### Поддержка
-Форк XKeen, как и оригинал, совершено бесплатен и не имеет каких либо ограничений по использованию. Надеюсь, доработки XKeen, многие из которых я сделал по Вашим просьбам, оказались полезны, так же, как и мои консультации в [телеграм-чате](https://t.me/+8Cvh7oVf6cE0MWRi). Для меня очень важно понимать, что труд и время потрачены не зря. Буду благодарен за любую Вашу поддержку:
+### Support
+The XKeen fork, like the original, is completely free and has no restrictions on use. I hope the improvements to XKeen, many of which I made at your request, turned out to be useful, as well as my consultations in [telegram chat](https://t.me/+8Cvh7oVf6cE0MWRi). It is very important for me to understand that work and time were not wasted. I would be grateful for any of your support:
 
 [CloudTips](https://pay.cloudtips.ru/p/7edb30ec)
 
 [ЮMoney](https://yoomoney.ru/to/41001350776240)
 
-Карта МИР: `2204 1201 2976 4110`
+MIR card: `2204 1201 2976 4110`
 
 USDT, сеть TRC20: `TQhy1LbuGe3Bz7EVrDYn67ZFLDjDBa2VNX`
 
 USDT, сеть ERC20: `0x6a5DF3b5c67E1f90dF27Ff3bd2a7691Fad234EE2`
 
 
-### Источники
+### Sources
 Origin <https://github.com/Skrill0/XKeen>
 
 Xray-core <https://github.com/XTLS/Xray-core>
@@ -102,4 +102,4 @@ Mihomo <https://github.com/MetaCubeX/mihomo>
 
 FAQ <https://jameszero.net/faq-xkeen.htm>
 
-Telegram <https://t.me/+8Cvh7oVf6cE0MWRi> (обсуждение, инструкции по установке, советы по использованию)
+Telegram <https://t.me/+8Cvh7oVf6cE0MWRi> (discussion, installation instructions, usage tips)

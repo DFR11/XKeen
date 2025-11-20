@@ -1,16 +1,16 @@
-# Функция для выбора пользователя между "Да" и "Нет" с номерами 0 и 1
+# Function for user selection between "Yes" and "No" with numbers 0 and 1
 input_concordance_list() {
     prompt_message="  $1"
-    error_message="  ${yellow}Пожалуйста, выберите вариант, введя номер 0 (Нет) или 1 (Да)${reset}"
+    error_message="${yellow}Please select an option by entering the number 0 (No) or 1 (Yes)${reset}"
 
     echo
     echo -e "$prompt_message"
-    echo "     0. Нет"
-    echo "     1. Да"
+    echo "0. No"
+    echo "1. Yes"
 
     while true; do
         echo
-        read -r -p "  Введите номер: " user_input
+        read -r -p "Enter number:" user_input
 
         case "$user_input" in
             0) return 1 ;;
@@ -24,10 +24,10 @@ input_concordance_list() {
     done
 }
 
-# Функция для ввода только цифровых символов
+# Function for entering only numeric characters
 input_digits() {
-    prompt_message="${1:-Введите числа: }"
-    error_message="${2:-${red}Некорректный ввод.${reset} Буквенные выражения не принимаются, ${yellow}используйте цифры${reset}.}"
+    prompt_message="${1:-Enter numbers: }"
+    error_message="${2:-${red}Invalid input.${reset} Literal expressions are not accepted, ${yellow}use numbers${reset}.}"
 
     while true; do
         read -r -p "  $prompt_message" input

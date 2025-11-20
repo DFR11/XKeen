@@ -1,4 +1,4 @@
-# Определение времени для задач cron
+# Timing cron jobs
 
 choice_cron_time() {
     for task in all geofile xkeen xray; do
@@ -8,64 +8,64 @@ choice_cron_time() {
         if [ "$(eval echo \${$task_var})" = true ]; then
             echo
             if [ "$task" = "all" ]; then
-                echo -e "  Время автоматического обновления для ${yellow}всех${reset} задач:"
+                echo -e "Automatic update time for ${yellow}all${reset} tasks:"
             else
-                echo -e "  Время автоматического обновления ${yellow}$task${reset}:"
+                echo -e "Automatic update time ${yellow}$task${reset}:"
             fi
             echo
-            echo "  Выберите день"
-            echo "     0. Отмена"
-            echo "     1. Понедельник"
-            echo "     2. Вторник"
-            echo "     3. Среда"
-            echo "     4. Четверг"
-            echo "     5. Пятница"
-            echo "     6. Суббота"
-            echo "     7. Воскресенье"
-            echo "     8. Ежедневно"
+            echo "Select day"
+            echo "0. Cancel"
+            echo "1. Monday"
+            echo "2. Tuesday"
+            echo "3. Environment"
+            echo "4. Thursday"
+            echo "5. Friday"
+            echo "6. Saturday"
+            echo "7. Sunday"
+            echo "8. Daily"
             echo
 
             day_choice=
             while true; do
-                read -r -p "  Ваш выбор: " day_choice
+                read -r -p "Your choice:" day_choice
                 if echo "$day_choice" | grep -qE '^[0-8]$'; then
                     break
                 else
-                    echo -e "  ${red}Некорректный номер действия.${reset} Пожалуйста, выберите снова"
+                    echo -e "${red}Invalid action number.${reset} Please select again"
                 fi
             done
 
             if [ "$day_choice" -eq 0 ]; then
-                echo -e "  Включение автоматического обновления ${yellow}$task${reset} отменено."
+                echo -e "Automatic update ${yellow}$task${reset} has been disabled."
             else
                 if [ "$day_choice" -eq 8 ]; then
                     echo
-                    read -r -p "  Выберите час (0-23): " hour
+                    read -r -p "Select hour (0-23):" hour
                         while ! { case "$hour" in *[!0-9]*) false;; *) [ "$hour" -ge 0 ] && [ "$hour" -le 23 ];; esac; }; do
-                        echo -e "  ${red}Некорректный час.${reset} Пожалуйста, попробуйте снова"
-                        read -r -p "  Введите значение от 0 до 23: " hour
+                        echo -e "${red}Incorrect hour.${reset} Please try again"
+                        read -r -p "Enter a value from 0 to 23:" hour
                     done
 
-                    read -r -p "  Выберите минуту (0-59): " minute
+                    read -r -p "Select minute (0-59):" minute
                     while ! { case "$minute" in *[!0-9]*) false;; *) [ "$minute" -ge 0 ] && [ "$minute" -le 59 ];; esac; }; do
-                        echo -e "  ${red}Некорректные минуты.${reset} Пожалуйста, попробуйте снова"
-                        read -r -p "  Введите значение от 0 до 59: " minute
+                        echo -e "${red}Incorrect minutes.${reset} Please try again"
+                        read -r -p "Enter a value from 0 to 59:" minute
                     done
 
                     cron_expression="$minute $hour * * *"
                     cron_display="$minute $hour * * *"
                 else
                     echo
-                    read -r -p "  Выберите час (0-23): " hour
+                    read -r -p "Select hour (0-23):" hour
                     while ! { case "$hour" in *[!0-9]*) false;; *) [ "$hour" -ge 0 ] && [ "$hour" -le 23 ];; esac; }; do
-                        echo -e "  ${red}Некорректный час.${reset} Пожалуйста, попробуйте снова"
-                        read -r -p "  Введите значение от 0 до 23: " hour
+                        echo -e "${red}Incorrect hour.${reset} Please try again"
+                        read -r -p "Enter a value from 0 to 23:" hour
                     done
 
-                    read -r -p "  Выберите минуту (0-59): " minute
+                    read -r -p "Select minute (0-59):" minute
                     while ! { case "$minute" in *[!0-9]*) false;; *) [ "$minute" -ge 0 ] && [ "$minute" -le 59 ];; esac; }; do
-                        echo -e "  ${red}Некорректные минуты.${reset} Пожалуйста, попробуйте снова"
-                        read -r -p "  Введите значение от 0 до 59: " minute
+                        echo -e "${red}Incorrect minutes.${reset} Please try again"
+                        read -r -p "Enter a value from 0 to 59:" minute
                     done
 
                     case "$day_choice" in
@@ -87,23 +87,23 @@ choice_cron_time() {
 
                 day_name=
                 case "$day_choice" in
-                    0) day_name="Отмена" ;;
-                    1) day_name="Понедельник" ;;
-                    2) day_name="Вторник" ;;
-                    3) day_name="Среда" ;;
-                    4) day_name="Четверг" ;;
-                    5) day_name="Пятница" ;;
-                    6) day_name="Суббота" ;;
-                    7) day_name="Воскресенье" ;;
-                    8) day_name="Ежедневно" ;;
+                    0) day_name="Cancel" ;;
+                    1) day_name="Monday" ;;
+                    2) day_name="Tuesday" ;;
+                    3) day_name="Wednesday" ;;
+                    4) day_name="Thursday" ;;
+                    5) day_name="Friday" ;;
+                    6) day_name="Saturday" ;;
+                    7) day_name="Sunday" ;;
+                    8) day_name="Daily" ;;
                 esac
 
                 if [ "$task" = "all" ]; then
                     echo
-                    echo -e "  Выбранное время автоматического обновления для ${yellow}всех${reset} задач: $day_name в $formatted_hour:$formatted_minute"
+                    echo -e "Selected auto update time for ${yellow}all${reset} tasks: $day_name in $formatted_hour:$formatted_minute"
                 else
                     echo
-                    echo -e "  Выбранное время автоматического обновления ${yellow}$task${reset}: $day_name в $formatted_hour:$formatted_minute"
+                    echo -e "Selected auto update time ${yellow}$task${reset}: $day_name in $formatted_hour:$formatted_minute"
                 fi
 
                 eval "${time_var}='$cron_expression'"

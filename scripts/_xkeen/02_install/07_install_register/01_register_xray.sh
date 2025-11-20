@@ -1,7 +1,7 @@
-# Регистрация xray
+# Registration xray
 register_xray_control() {
 
-    # Создание файла xray_s.control
+    # Creating the xray_s.control file
     cat << EOF > "$register_dir/xray_s.control"
 Package: xray_s
 Version: $xray_current_version
@@ -21,7 +21,7 @@ register_xray_list() {
     cd "$register_dir/" || exit
     touch xray_s.list
 
-# Генерация списка файлов
+# Generating a list of files
     find /opt/etc/xray/dat -type f | while read -r file; do
         echo "$file" >> xray_s.list
     done
@@ -34,7 +34,7 @@ register_xray_list() {
         echo "$file" >> xray_s.list
     done
 
-    # Добавление дополнительных путей
+    # Adding Additional Paths
     echo "/opt/var/log/xray" >> xray_s.list
     echo "/opt/etc/xray/configs" >> xray_s.list
     echo "/opt/etc/xray/dat" >> xray_s.list
@@ -43,7 +43,7 @@ register_xray_list() {
 }
 
 register_xray_status() {
-    # Генерация новой записи
+    # Generating a new entry
     echo "Package: xray_s" > new_entry.txt
     echo "Version: $xray_current_version" >> new_entry.txt
     echo "Depends: libc, libssp, librt, libpthread, ca-bundle" >> new_entry.txt
@@ -51,9 +51,9 @@ register_xray_status() {
     echo "Architecture: $status_architecture" >> new_entry.txt
     echo "Installed-Time: $(date +%s)" >> new_entry.txt
 
-    # Чтение существующего содержимого файла "status"
+    # Reading the existing contents of the "status" file
     existing_content=$(cat "$status_file")
 
-    # Объединение существующего содержимого и новой записи
+    # Merging existing content and new entry
     echo -e "\n$(cat new_entry.txt)" >> "$status_file"
 }

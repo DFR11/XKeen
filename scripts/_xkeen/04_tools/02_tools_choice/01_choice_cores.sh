@@ -1,14 +1,14 @@
-# Запрос на добавление ядер проксирования
+# Request to add proxy cores
 choice_add_proxy_cores() {
     while true; do
         echo
-        echo -e "  Выберите ${yellow}ядро проксирования${reset} для загрузки и установки:"
+        echo -e "Select ${yellow}proxy kernel${reset} to download and install:"
         echo
         echo "     1. Xray"
         echo "     2. Mihomo"
         echo "     3. Xray + Mihomo"
         echo
-        echo "     0. Пропустить загрузку ядра проксирования, если оно уже установлено"
+        echo "0. Skip downloading the proxy kernel if it is already installed"
         echo
 
         valid_input=true
@@ -16,13 +16,13 @@ choice_add_proxy_cores() {
         add_mihomo=false
 
         while true; do
-            read -r -p "  Ваш выбор: " proxy_choice
+            read -r -p "Your choice:" proxy_choice
             proxy_choice=$(echo "$proxy_choice" | sed 's/,/, /g')
 
             if echo "$proxy_choice" | grep -qE '^[0-3]$'; then
                 break
             else
-                echo -e "  ${red}Некорректный ввод.${reset} Выберите один из предложенных вариантов"
+                echo -e "${red}Invalid input.${reset} Select one of the suggested options"
             fi
         done
 
@@ -42,7 +42,7 @@ choice_add_proxy_cores() {
                 add_mihomo=false
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 valid_input=false
                 ;;
         esac
@@ -51,41 +51,41 @@ choice_add_proxy_cores() {
     done
 }
 
-# Смена ядра проксирования на Xray
+# Changing the proxy kernel to Xray
 choice_xray_core() {  
-    command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Ошибка${reset}: Ядро Xray не установлено. Выполните установку командой ${yellow}xkeen -ux${reset}"; exit 1; }
+    command -v xray >/dev/null 2>&1 || { echo -e "${red}Error${reset}: Xray kernel is not installed. Install with ${yellow}xkeen -ux${reset}"; exit 1; }
     if grep -q 'name_client="xray"' $initd_dir/S99xkeen; then
-        echo -e " Смена ядра ${red}не выполнена${reset}. Устройство уже работает на ядре ${yellow}Xray${reset}"
+        echo -e "Kernel change ${red}failed${reset}. The device is already running on the ${yellow}Xray${reset} kernel"
     elif grep -q 'name_client="mihomo"' $initd_dir/S99xkeen; then
         if pidof "mihomo" >/dev/null; then
             $initd_dir/S99xkeen stop
         fi
         sed -i 's/name_client="mihomo"/name_client="xray"/' $initd_dir/S99xkeen
         add_chmod_init
-        echo -e "  ${green}Выполнена${reset} смена ядра на ${yellow}Xray${reset}"
-        echo -e "  Настройте конфигурацию по пути '${yellow}$install_conf_dir/${reset}'"
-        echo -e "  И запустите проксирование командой ${yellow}xkeen -start${reset}"
+        echo -e "${green}${reset} kernel changed to ${yellow}Xray${reset}"
+        echo -e "Set up the configuration along the way'${yellow}$install_conf_dir/${reset}'"
+        echo -e "And start proxying with the command ${yellow}xkeen -start${reset}"
     else
-        echo -e " Произошла ${red}ошибка${reset} при смене ядра проксирования"
+        echo -e "${red}error${reset} occurred when changing proxy kernel"
     fi
 }
 
-# Смена ядра проксирования на Mihomo
+# Changing the proxy kernel to Mihomo
 choice_mihomo_core() {
-    command -v mihomo >/dev/null 2>&1 || { echo -e "  ${red}Ошибка${reset}: Ядро Mihomo не установлено. Выполните установку командой ${yellow}xkeen -um${reset}"; exit 1; }
-    command -v yq >/dev/null 2>&1 || { echo -e "  ${red}Ошибка${reset}: не установлен парсер конфигурационных файлов Mihomo - ${yellow}Yq${reset}"; exit 1; }
+    command -v mihomo >/dev/null 2>&1 || { echo -e "${red}Error${reset}: Mihomo kernel is not installed. Install with ${yellow}xkeen -um${reset}"; exit 1; }
+    command -v yq >/dev/null 2>&1 || { echo -e "${red}Error${reset}: Mihomo configuration file parser is not installed - ${yellow}Yq${reset}"; exit 1; }
     if grep -q 'name_client="mihomo"' $initd_dir/S99xkeen; then
-        echo -e " Смена ядра ${red}не выполнена${reset}. Устройство уже работает на ядре ${yellow}Mihomo${reset}"
+        echo -e "Kernel change ${red}failed${reset}. The device is already running on the ${yellow}Mihomo${reset} kernel"
     elif [ -f "$install_dir/mihomo" ] && [ -f "$install_dir/yq" ] && grep -q 'name_client="xray"' $initd_dir/S99xkeen; then
         if pidof "xray" >/dev/null; then
             $initd_dir/S99xkeen stop
         fi
         sed -i 's/name_client="xray"/name_client="mihomo"/' $initd_dir/S99xkeen
         add_chmod_init
-        echo -e "  ${green}Выполнена${reset} смена ядра на ${yellow}Mihomo${reset}"
-        echo -e "  Настройте конфигурацию по пути '${yellow}$mihomo_conf_dir/${reset}'"
-        echo -e "  И запустите проксирование командой ${yellow}xkeen -start${reset}"
+        echo -e "${green}${reset} kernel change completed to ${yellow}Mihomo${reset}"
+        echo -e "Set up the configuration along the way'${yellow}$mihomo_conf_dir/${reset}'"
+        echo -e "And start proxying with the command ${yellow}xkeen -start${reset}"
     else
-        echo -e " Произошла ${red}ошибка${reset} при смене ядра проксирования"
+        echo -e "${red}error${reset} occurred when changing proxy kernel"
     fi
 }

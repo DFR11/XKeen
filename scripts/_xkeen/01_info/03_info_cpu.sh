@@ -1,9 +1,9 @@
-# Функция для получения информации о процессоре
+# Function for obtaining information about the processor
 info_cpu() {
-    # Определение переменных
+    # Defining Variables
     cpuinfo=$(grep -i 'model name' /proc/cpuinfo | sed -e 's/.*: //i' | tr '[:upper:]' '[:lower:]')
 
-    # Попытка определить архитектуру из uname или /proc/cpuinfo
+    # Trying to determine architecture from uname or /proc/cpuinfo
     case "$(uname -m | tr '[:upper:]' '[:lower:]')" in
         *'armv5tel'* | *'armv6l'* | *'armv7'*)
             architecture='arm32-v5'
@@ -24,7 +24,7 @@ info_cpu() {
             architecture='mips32'
             ;;
         *)
-            # Если архитектура не определена, используем резервную проверку /proc/cpuinfo
+            # If the architecture is not defined, use the fallback check /proc/cpuinfo
             if echo "${cpuinfo}" | grep -q -e 'armv8' -e 'aarch64' -e 'cortex-a'; then
                 architecture='arm64-v8a'
             elif echo "${cpuinfo}" | grep -q 'mips64le'; then
@@ -39,7 +39,7 @@ info_cpu() {
             ;;
     esac
 
-    # Проверка Little Endian с помощью lscpu только при архитектуре "mips64" или "mips32"
+    # Checking Little Endian with lscpu only on "mips64" or "mips32" architecture
     if [ "${architecture}" = 'mips64' ] || [ "${architecture}" = 'mips32' ]; then
         if [ "${info_packages_lscpu}" = "not_installed" ]; then
             opkg install lscpu &>/dev/null
@@ -51,6 +51,6 @@ info_cpu() {
         fi
     fi
 
-    # Получение информации о архитектуре из файла состояния (status_file)
+    # Retrieving architecture information from the status file (status_file)
     status_architecture=$(grep -m 1 '^Architecture:' "${status_file}" | awk '{print $2}')
 }

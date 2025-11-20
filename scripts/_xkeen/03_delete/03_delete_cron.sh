@@ -1,4 +1,4 @@
-# Функция для удаления cron задачи для GeoFile
+# Function to remove cron task for GeoFile
 delete_cron_geofile() {
     if [ -f "$cron_dir/$cron_file" ]; then
         tmp_file="$cron_dir/${cron_file}.tmp"

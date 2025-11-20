@@ -1,6 +1,6 @@
-# Импорт модулей регистраций
+# Importing registration modules
 	
-# Модули регистрации
+# Registration modules
 . "$xinstall_dir/07_install_register/01_register_xray.sh"
 . "$xinstall_dir/07_install_register/01_register_mihomo.sh"
 . "$xinstall_dir/07_install_register/02_register_xkeen.sh"

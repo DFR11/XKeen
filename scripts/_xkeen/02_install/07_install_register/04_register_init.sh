@@ -1,18 +1,18 @@
 #!/bin/sh
 
-# Информация о службе: Запуск / Остановка XKeen
-# Версия: 2.28
+# Service Information: Start/Stop XKeen
+# Version: 2.28
 
-# Окружение
+# Environment
 PATH="/opt/bin:/opt/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
 
-# Цвета
+# Colors
 green="\033[32m"
 red="\033[31m"
 yellow="\033[33m"
 reset="\033[0m"
 
-# Имена
+# Names
 name_client="xray"
 name_app="XKeen"
 name_policy="xkeen"
@@ -21,7 +21,7 @@ name_chain="xkeen"
 name_prerouting_chain="$name_chain"
 name_output_chain="${name_chain}_mask"
 
-# Директории
+# Directories
 directory_os_modules="/lib/modules/$(uname -r)"
 directory_user_modules="/opt/lib/modules"
 directory_configs_app="/opt/etc/$name_client"
@@ -29,7 +29,7 @@ directory_xray_config="$directory_configs_app/configs"
 directory_xray_asset="$directory_configs_app/dat"
 directory_logs="/opt/var/log"
 
-# Файлы
+# Files
 file_netfilter_hook="/opt/etc/ndm/netfilter.d/proxy.sh"
 log_access="$directory_logs/$name_client/access.log"
 log_error="$directory_logs/$name_client/error.log"
@@ -44,7 +44,7 @@ url_policy="rci/show/ip/policy"
 url_keenetic_port="rci/ip/http/ssl"
 url_https_port="rci/ip/static"
 
-# Настройки правил iptables
+# iptables rule settings
 table_id="111"
 table_mark="0x111"
 table_redirect="nat"
@@ -59,18 +59,18 @@ port_donor=""
 port_exclude=""
 port_dns="53"
 
-# Настройки запуска
+# Launch Settings
 start_attempts=10
 start_auto="on"
 start_delay=3
 
-# Контроль файловых дескрипторов
+# File descriptor control
 check_fd="off"
 arm64_fd=40000
 other_fd=10000
 delay_fd=60
 
-# Функции журналирования
+# Logging Features
 log_info_router() {
     logger -p notice -t "$name_app" "$1"
 }
@@ -85,13 +85,13 @@ log_error_router() {
 
 log_error_terminal() {
     echo
-    echo -e "${red}Ошибка${reset}: $1" >&2
+    echo -e "${red}Error${reset}: $1" >&2
     exit 1
 }
 
 log_warning_terminal() {
     echo
-    echo -e "${yellow}Предупреждение${reset}: $1" >&2
+    echo -e "${yellow}Warning${reset}: $1" >&2
 }
 
 log_clean() {
@@ -134,7 +134,7 @@ get_user_ipv6_excludes() {
     fi
 }
 
-# Функция обработки, валидации и очистки списка портов
+# Function for processing, validating and clearing the port list
 validate_and_clean_ports() {
     input_ports="$1"
     final_ports=""
@@ -159,7 +159,7 @@ validate_and_clean_ports() {
     echo "$final_ports"
 }
 
-# Функция обработки пользовательских портов
+# Custom Port Processing Function
 process_user_ports() {
     user_proxy_ports=""
     user_exclude_ports=""
@@ -212,13 +212,13 @@ process_user_ports() {
     fi
 }
 
-# Проверка статуса прокси-клиента
+# Checking the status of the proxy client
 proxy_status() { pidof $name_client >/dev/null; }
 
-# Поиск конфигурации inbounds
+# Search for inbounds configuration
 [ "$name_client" = "xray" ] && file_inbounds=$(find "$directory_xray_config" -name '*.json' -exec grep -lF '"inbounds":' {} \; -quit 2>/dev/null || true)
 
-# Поиск конфигураций DNS
+# Finding DNS Configurations
 file_dns() {
     for file in "$directory_xray_config"/*.json; do
         [ -f "$file" ] || continue
@@ -238,7 +238,7 @@ create_user() {
     fi
 }
 
-# Загрузка модулей
+# Loading modules
 load_modules() {
     module="$1"
     if [ -f "${directory_os_modules}/${module}" ]; then
@@ -248,7 +248,7 @@ load_modules() {
     fi
 }
 
-# Проверка доступности owner в iptables
+# Checking owner availability in iptables
 is_owner_working() {
     iptables -w -t mangle -N TEST_OWNER_CHAIN >/dev/null 2>&1 || return 1
 
@@ -281,7 +281,7 @@ load_modules xt_TPROXY.ko
 load_modules xt_socket.ko
 load_modules xt_multiport.ko
 
-# Обработка модулей и портов
+# Processing modules and ports
 get_modules() {
     if [ "$mode_proxy" = "TProxy" ] || [ "$mode_proxy" = "Mixed" ]; then
         for module in xt_TPROXY.ko xt_socket.ko; do
@@ -290,7 +290,7 @@ get_modules() {
                 log_error_terminal "
   Модуль ${module} не найден
   Невозможно запустить прокси в режиме ${mode_proxy} без него
-  Установите компонент роутера '${yellow}Модули ядра подсистемы Netfilter${reset}'
+  Установите компонент роутера '${yellow}Netfilter subsystem kernel modules${reset}'
   "
             fi
         done
@@ -301,7 +301,7 @@ get_modules() {
             log_warning_terminal "
   Модуль multiport не найден
   Невозможно использовать указанные порты без него
-  Установите компонент роутера '${yellow}Модули ядра подсистемы Netfilter${reset}'
+  Установите компонент роутера '${yellow}Netfilter subsystem kernel modules${reset}'
   
   Без модуля multiport прокси будет работать на всех портах
   "
@@ -316,7 +316,7 @@ get_modules() {
             log_warning_terminal "
   Модуль owner не найден
   Невозможно использовать DNS-сервер Xray без него
-  Установите компонент роутера '${yellow}Модули ядра подсистемы Netfilter${reset}'
+  Установите компонент роутера '${yellow}Netfilter subsystem kernel modules${reset}'
   
   Без модуля owner Xray может использовать только DNS роутера
   "
@@ -324,7 +324,7 @@ get_modules() {
     fi
 }
 
-# Получение порта Keenetic
+# Obtaining a Keenetic port
 get_keenetic_port() {
     result=$(curl -kfsS "${url_server}/${url_keenetic_port}" 2>/dev/null)
     keenetic_port=$(echo "$result" | jq -r '.port' 2>/dev/null)
@@ -332,14 +332,14 @@ get_keenetic_port() {
         log_error_terminal "
   ${red}Порт 443 занят${reset} сервисами Keenetic
   
-  Освободите его на странице 'Пользователи и доступ' веб-интерфейса роутера
+  Освободите его на странице 'Users and access' веб-интерфейса роутера
   "
         proxy_stop
         exit 1
     fi
 }
 
-# Получение порта для Redirect
+# Getting the port for Redirect
 get_port_redirect() {
     if [ "$name_client" = "mihomo" ]; then
         port=$(yq eval '.redir-port // ""' "$mihomo_config" 2>/dev/null)
@@ -359,7 +359,7 @@ get_port_redirect() {
     echo "$port_redirect"
 }
 
-# Получение порта для TProxy
+# Getting the port for TProxy
 get_port_tproxy() {
     if [ "$name_client" = "mihomo" ]; then
         port=$(yq eval '.tproxy-port // ""' "$mihomo_config" 2>/dev/null)
@@ -382,7 +382,7 @@ get_port_tproxy() {
     echo "$port_tproxy"
 }
 
-# Получение сети для Redirect
+# Getting a network for Redirect
 get_network_redirect() {
     if [ "$name_client" = "mihomo" ]; then
         if [ -n "$port_redirect" ]; then
@@ -403,7 +403,7 @@ get_network_redirect() {
     echo "$network_redirect"
 }
 
-# Получение сети для TProxy
+# Obtaining a network for TProxy
 get_network_tproxy() {
     if [ "$name_client" = "mihomo" ]; then
         if [ -n "$port_redirect" ] && [ -n "$port_tproxy" ]; then
@@ -426,7 +426,7 @@ get_network_tproxy() {
     echo "$network_tproxy"
 }
 
-# Получение исключенных портов
+# Getting excluded ports
 get_port_exclude() {
     result=$(curl -kfsS "${url_server}/${url_https_port}" 2>/dev/null)
     port_exclude_redirect=$(echo "$result" | jq -r '.[] | if has("to-port") then .["to-port"] else .port end' 2>/dev/null |
@@ -440,11 +440,11 @@ get_port_exclude() {
     echo "$port_exclude"
 }
 
-# Получение исключений IPv4
+# Getting IPv4 exceptions
 get_exclude_ip4() {
     [ "$iptables_supported" != "true" ] && return
 
-    # Получаем провайдерский IPv4
+    # We get the provider's IPv4
     ipv4_eth=$(ip route get 77.88.8.8 2>/dev/null | grep -o 'src [0-9.]\+' | awk '{print $2}' ||
                ip route get 8.8.8.8 2>/dev/null | grep -o 'src [0-9.]\+' | awk '{print $2}' ||
                ip route get 1.1.1.1 2>/dev/null | grep -o 'src [0-9.]\+' | awk '{print $2}')
@@ -453,11 +453,11 @@ get_exclude_ip4() {
     echo "${ipv4_eth} ${ipv4_exclude}${user_ipv4}" | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' ' | sed 's/^ //; s/ $//'
 }
 
-# Получение исключений IPv6
+# Receiving IPv6 exceptions
 get_exclude_ip6() {
     [ "$ip6tables_supported" != "true" ] && return
 
-    # Получаем провайдерский IPv6
+    # We get the provider's IPv6
     ipv6_eth=$(ip -6 route get 2a02:6b8::feed:0ff 2>/dev/null | awk -F 'src ' '{print $2}' | awk '{print $1}' ||
                ip -6 route get 2001:4860:4860::8888 2>/dev/null | awk -F 'src ' '{print $2}' | awk '{print $1}' ||
                ip -6 route get 2606:4700:4700::1111 2>/dev/null | awk -F 'src ' '{print $2}' | awk '{print $1}')
@@ -466,7 +466,7 @@ get_exclude_ip6() {
     echo "${ipv6_eth} ${ipv6_exclude}${user_ipv6}" | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' ' | sed 's/^ //; s/ $//'
 }
 
-# Получение метки политики
+# Retrieving a Policy Label
 get_policy_mark() {
     policy_mark=$(curl -kfsS "${url_server}/${url_policy}" 2>/dev/null |
         jq -r ".[] | select(.description | ascii_downcase == \"${name_policy}\") | .mark" 2>/dev/null)
@@ -495,7 +495,7 @@ get_policy_mark() {
     fi
 }
 
-# Получение режима прокси-клиента
+# Getting proxy client mode
 get_mode_proxy() {
     if [ -n "$port_redirect" ] && [ -n "$port_tproxy" ]; then
         mode_proxy="Mixed"
@@ -509,7 +509,7 @@ get_mode_proxy() {
     echo "$mode_proxy"
 }
 
-# Настройка брандмауэра
+# Configuring the firewall
 configure_firewall() {
     : > "$file_netfilter_hook"
     cat > "$file_netfilter_hook" <<EOL
@@ -544,13 +544,13 @@ ip6tables_supported=$ip6tables_supported
 arm64_fd=$arm64_fd
 other_fd=$other_fd
 
-# Перезапуск скрипта
+# Restarting the script
 restart_script() {
     exec /bin/sh "\$0" "\$@"
 }
 
 if pidof "\$name_client" >/dev/null; then
-    # Добавление правил iptables
+    # Adding iptables rules
     add_ipt_rule() {
         family="\$1"
         table="\$2"
@@ -595,7 +595,7 @@ if pidof "\$name_client" >/dev/null; then
         fi
     }
 
-    # Добавление правил-исключений
+    # Adding exception rules
     add_exclude_rules() {
         chain="\$1"
         for exclude in \$exclude_list; do
@@ -618,11 +618,11 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Настройка таблицы маршрутов
+    # Setting up the route table
     configure_route() {
         ip_version="\$1"
 
-        # Определяем таблицу маршрутизации
+        # Defining the routing table
         if [ -n "\$policy_mark" ]; then
             policy_table=\$(ip rule show | awk -v policy="\$policy_mark" '\$0 ~ policy && /lookup/ && !/blackhole/{print \$NF}')
             route_show_cmd="ip -\$ip_version route show table all | grep -w \$policy_table"
@@ -630,7 +630,7 @@ if pidof "\$name_client" >/dev/null; then
             route_show_cmd="ip -\$ip_version route show table main"
         fi
 
-        # Проверяем есть ли default маршрут
+        # Checking if there is a default route
         check_default() {
             eval "\$route_show_cmd" 2>/dev/null | grep -q '^default'
         }
@@ -650,7 +650,7 @@ if pidof "\$name_client" >/dev/null; then
             ip -\$ip_version route add local default dev lo table "\$table_id" >/dev/null 2>&1
         fi
 
-        # Копируем маршруты
+        # Copying routes
         eval "\$route_show_cmd" 2>/dev/null | while read -r route; do
             case "\$route" in
                 unreachable*|blackhole*)
@@ -663,7 +663,7 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Создание множественных правил multiport
+    # Creating multiple multiport rules
     add_multiport_rules() {
         family="\$1"
         table="\$2"
@@ -715,7 +715,7 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Добавление цепочек PREROUTING
+    # Adding PREROUTING chains
     add_prerouting() {
         family="\$1"
         table="\$2"
@@ -731,7 +731,7 @@ if pidof "\$name_client" >/dev/null; then
             if [ -n "\$port_donor" ] || [ -n "\$port_exclude" ]; then
                 add_multiport_rules "\$family" "\$table" "\$net"
             else
-                # Логика для случая, когда порты не указаны (проксирование всего трафика)
+                # Logic for the case when ports are not specified (proxying all traffic)
                 if [ "\$family" = "iptables" ] && [ "\$iptables_supported" = "true" ] &&
                    ! iptables -w -t "\$table" -C PREROUTING \$connmark_option -m conntrack ! --ctstate INVALID -j \$name_prerouting_chain >/dev/null 2>&1; then
                     iptables -w -t "\$table" -A PREROUTING \$connmark_option -m conntrack ! --ctstate INVALID -j \$name_prerouting_chain >/dev/null 2>&1
@@ -744,7 +744,7 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Добавление цепочек OUTPUT
+    # Adding OUTPUT chains
     add_output() {
         family="\$1"
         table="\$2"
@@ -834,7 +834,7 @@ EOL
     sh "$file_netfilter_hook"
 }
 
-# Удаление правил Iptables
+# Removing Iptables rules
 clean_firewall() {
     [ -f "$file_netfilter_hook" ] && : > "$file_netfilter_hook"
 
@@ -877,7 +877,7 @@ clean_firewall() {
     fi
 }
 
-# Мониторинг файловых дескрипторов
+# File Descriptor Monitoring
 monitor_fd() {
     if ! opkg list-installed | grep -q "^coreutils-nohup"; then
         opkg update && opkg install coreutils-nohup
@@ -888,7 +888,7 @@ monitor_fd() {
             limit=$(awk '/Max open files/ {print $4}' "/proc/$client_pid/limits")
             current=$(ls -1 /proc/$client_pid/fd 2>/dev/null | wc -l)
             if [ "$limit" -gt 0 ] && [ "$current" -gt $((limit * 90 / 100)) ]; then
-                log_warning_router "$name_client открыл $current из $limit файловых дескрипторов, инициирован перезапуск"
+                log_warning_router "$name_client opened $current of $limit file descriptors, restart initiated"
                 fd_out=true
                 proxy_stop
                 proxy_start "on"
@@ -898,7 +898,7 @@ monitor_fd() {
     done
 }
 
-# Запуск прокси-клиента
+# Running a proxy client
 proxy_start() {
     start_manual="$1"
     if [ "$start_manual" = "on" ] || [ "$start_auto" = "on" ]; then
@@ -923,15 +923,15 @@ proxy_start() {
             fi
         fi
         if proxy_status; then
-            echo -e "  Прокси-клиент уже ${green}запущен${reset}"
+            echo -e "Proxy client is already ${green}started${reset}"
             [ "$mode_proxy" != "Other" ] && configure_firewall
             if [ "$start_manual" = "on" ]; then
-                log_error_terminal "Не удалось запустить $name_client, так как он уже запущен"
+                log_error_terminal "$name_client could not be started because it is already running"
             else
-                log_info_router "Прокси-клиент успешно запущен в режиме $mode_proxy"
+                log_info_router "Proxy client started successfully in $mode_proxy mode"
             fi
         else
-            log_info_router "Инициирован запуск прокси-клиента"
+            log_info_router "Proxy client startup initiated"
             delay_increment=1
             current_delay=0
             [ "$start_manual" != "on" ] && current_delay=$start_delay
@@ -1004,16 +1004,16 @@ proxy_start() {
                 sleep "$current_delay"
                 if proxy_status; then
                     [ "$mode_proxy" != "Other" ] && configure_firewall
-                    echo -e "  Прокси-клиент ${green}запущен${reset} в режиме ${yellow}${mode_proxy}${reset}"
+                    echo -e "Proxy client ${green}launched${reset} in ${yellow}${mode_proxy}${reset}"
                     if curl -kfsS "${url_server}/${url_policy}" | jq --arg policy "$name_policy" -e 'any(.[]; .description | ascii_downcase == $policy)' > /dev/null; then
                         if [ -e "/tmp/noinet" ]; then
                             echo
-                            echo -e "  У политики ${yellow}$name_policy${reset} ${red}нет доступа в интернет${reset}"
-                            echo "  Проверьте, установлена ли галка на продключении к провайдеру"
+                            echo -e "Policy ${yellow}$name_policy${reset} ${red}does not have internet access${reset}"
+                            echo "Check if the checkbox for connecting to your provider is checked"
                         fi
                     fi
-                    [ "$mode_proxy" = "Other" ] && echo -e "  Функция прозрачного прокси ${red}не активна${reset}. Направляйте соединения на ${yellow}${name_client}${reset} вручную"
-                    log_info_router "Прокси-клиент успешно запущен в режиме $mode_proxy"
+                    [ "$mode_proxy" = "Other" ] && echo -e "The transparent proxy function ${red}is not active${reset}. Route connections to ${yellow}${name_client}${reset} manually"
+                    log_info_router "Proxy client started successfully in $mode_proxy mode"
                     if [ "$check_fd" = "on" ] && [ ! -f "/tmp/observer_fd" ]; then
                         touch "/tmp/observer_fd"
                         monitor_fd &
@@ -1023,20 +1023,20 @@ proxy_start() {
                 current_delay=$((current_delay + delay_increment))
                 attempt=$((attempt + 1))
             done
-            echo -e "  ${red}Не удалось запустить${reset} прокси-клиент"
-            log_error_terminal "Не удалось запустить прокси-клиент"
+            echo -e "${red}Failed to start ${reset} proxy client"
+            log_error_terminal "Failed to start proxy client"
         fi
     else
         clean_firewall
     fi
 }
 
-# Остановка прокси-клиента
+# Stopping the proxy client
 proxy_stop() {
     if ! proxy_status; then
-        echo -e "  Прокси-клиент ${red}не запущен${reset}"
+        echo -e "Proxy client ${red}not running${reset}"
     else
-        log_info_router "Инициирована остановка прокси-клиента"
+        log_info_router "Proxy client stop initiated"
         delay_increment=1
         current_delay=0
         attempt=1
@@ -1045,32 +1045,32 @@ proxy_stop() {
             killall -q -9 "$name_client"
             sleep "$current_delay"
             if ! proxy_status; then
-                echo -e "  Прокси-клиент ${yellow}остановлен${reset}"
-                log_info_router "Прокси-клиент успешно остановлен"
+                echo -e "Proxy client ${yellow}stopped${reset}"
+                log_info_router "Proxy client stopped successfully"
                 return 0
             fi
             current_delay=$((current_delay + delay_increment))
             attempt=$((attempt + 1))
         done
-        echo -e "  Прокси-клиент ${red}не удалось остановить${reset}"
-        log_error_terminal "Не удалось остановить прокси-клиент"
+        echo -e "Proxy client ${red}failed to stop${reset}"
+        log_error_terminal "Failed to stop proxy client"
     fi
 }
 
-# Менеджер команд
+# Team manager
 case "$1" in
     start) proxy_start "$2" ;;
     stop) proxy_stop ;;
     status)
         if proxy_status; then
             mode_proxy=$(grep '^mode_proxy=' $file_netfilter_hook | awk -F'"' '{print $2}')
-            echo -e "  Прокси-клиент ${yellow}$name_client${reset} ${green}запущен${reset} в режиме ${yellow}$mode_proxy${reset}"
+            echo -e "Proxy client ${yellow}$name_client${reset} ${green}launched${reset} in mode ${yellow}$mode_proxy${reset}"
         else
-            echo -e "  Прокси-клиент ${red}не запущен${reset}"
+            echo -e "Proxy client ${red}not running${reset}"
         fi
         ;;
     restart) proxy_stop; proxy_start "$2" ;;
-    *) echo -e "  Команды: ${green}start${reset} | ${red}stop${reset} | ${yellow}restart${reset} | status" ;;
+    *) echo -e "Команды: ${green}start${reset} | ${red}stop${reset} | ${yellow}restart${reset} | status" ;;
 esac
 
 exit 0

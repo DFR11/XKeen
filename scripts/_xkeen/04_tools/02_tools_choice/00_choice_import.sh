@@ -1,6 +1,6 @@
-# Импорт модулей выбора пользователя
+# Importing User Selection Modules
 
-# Модули выбора
+# Selection modules
 . "$xtools_dir/02_tools_choice/01_choice_cores.sh"
 . "$xtools_dir/02_tools_choice/02_choice_xkeen.sh"
 . "$xtools_dir/02_tools_choice/03_choice_geosite.sh"

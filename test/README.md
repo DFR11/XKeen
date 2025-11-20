@@ -1,28 +1,28 @@
-## Версия 1.1.3.9 Beta
+## Version 1.1.3.9 Beta
 
 > [!WARNING]
-> Это версия из канала разработки. Она регулярно дорабатывается, содержит новейшие функции, возможности и исправления, но может иметь не выявленные ошибки. Если столкнулись с проблемой - обязательно обновитесь командой `xkeen -uk`, возможно ошибка уже известна и исправлена. Если же проблема сохранилась, выполните `xkeen -diag` и покажите диагностический отчёт в телеграм-чате https://t.me/+8Cvh7oVf6cE0MWRi, подробно описав возникшую проблему
+> This is a version from the development channel. It is regularly updated to contain the latest features, functionality and fixes, but may contain undetected bugs. If you encounter a problem, be sure to update with the command `xkeen -uk`, perhaps the error is already known and fixed. If the problem persists, run `xkeen -diag` and show the diagnostic report in the telegram chat https://t.me/+8Cvh7oVf6cE0MWRi, describing the problem in detail
 
-### Изменения
-- При обновлении Xray и Mihomo теперь отображается версия уже установленного в роутере бинарника
-- Исправлено добавление диапазона портов в исключения проксирования
-- Снято техническое ограничение, позволявшее использовать не более 15 портов проксирования и портов исключенных из проксирования
-- Более корректный парсинг конфигурационного файла dns-сервера xray
-- Исправлен сбой автозапуска XKeen, возникавший в некоторых случаях
-- Скрипт запуска S24xray переименован в S99xkeen, вспомогательный скрипт S99xkeenstart упразднён
+### Changes
+- When updating Xray and Mihomo, the version of the binary already installed in the router is now displayed
+- Fixed adding a port range to proxy exceptions
+- The technical restriction that allowed the use of no more than 15 proxy ports and ports excluded from proxying has been removed
+- More correct parsing of the xray DNS server configuration file
+- Fixed XKeen autorun crash that occurred in some cases
+- The S24xray startup script has been renamed to S99xkeen, the S99xkeenstart helper script has been removed
 - Добавлена поддержка внешних файлов `ip_exclude.lst`, `port_proxying.lst` и `port_exclude.lst` в директории /opt/etc/xkeen/ для указания IP и портов (проксирования/исключения из проксирования)
-- Добавлена совместимость с прошивкой KeeneticOS 5.0
+- Added compatibility with KeeneticOS 5.0 firmware
 
 
-### Порядок обновления с версии 1.1.3.8
-Переключитесь на канал разработки и выполните обновление:
+### How to update from version 1.1.3.8
+Switch to the development channel and update:
 ```
 xkeen -channel
 xkeen -uk
 ```
-В канале разработки команда `xkeen -uk` при каждом запуске загружает и устанавливает актуальную бету XKeen
+In the development channel, the command `xkeen -uk` downloads and installs the current beta of XKeen every time it is launched
 
-### Порядок установки
+### Installation procedure
 ```
 opkg update && opkg upgrade && opkg install curl tar
 curl -OL https://raw.githubusercontent.com/jameszeroX/xkeen/main/test/xkeen.tar.gz

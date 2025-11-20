@@ -1,33 +1,33 @@
 # -------------------------------------
-# Цвета
+# Colors
 # -------------------------------------
-green="\033[92m"	# Зеленый
-red="\033[91m"		# Красный
-yellow="\033[33m"	# Желтый
-light_blue="\033[96m"	# Голубой
-italic="\033[3m"	# Курсив
-reset="\033[0m"		# Сброс цветов
+green="\033[92m"	# Green
+red="\033[91m"		# Red
+yellow="\033[33m"	# Yellow
+light_blue="\033[96m"	# Blue
+italic="\033[3m"	# Italics
+reset="\033[0m"		# Reset colors
 
 # -------------------------------------
-# Директории
+# Directories
 # -------------------------------------
-tmp_dir_global="/opt/tmp"		 # Временная директория общая
-tmp_dir="/opt/tmp/xkeen"		 # Временная директория XKeen
-xtmp_dir="/opt/tmp/xray"		 # Временная директория Xray
-mtmp_dir="/opt/tmp/mihomo"		 # Временная директория Mihomo
-xkeen_dir="/opt/sbin/.xkeen"		 # Директория скриптов XKeen
-xkeen_cfg="/opt/etc/xkeen"		 # Директория конфигурации XKeen
-xkeen_log_dir="/opt/var/log/xkeen"	 # Директория логов XKeen
-xray_log_dir="/opt/var/log/xray"	 # Директория логов Xray
-initd_dir="/opt/etc/init.d"		 # Директория init.d
-pid_dir="/opt/var/run"			 # Директория pid файлов
-backups_dir="/opt/backups"		 # Директория бекапов
-install_dir="/opt/sbin"			 # Директория установки
-geo_dir="/opt/etc/xray/dat"		 # Директория для dat
-cron_dir="/opt/var/spool/cron/crontabs"	 # Директория планировщика
-cron_file="root"			 # Файл планировщика
-install_conf_dir="/opt/etc/xray/configs" # Директория конфигурации Xray
-mihomo_conf_dir="/opt/etc/mihomo"	 # Директория конфигурации Mihomo
+tmp_dir_global="/opt/tmp"		 # General temporary directory
+tmp_dir="/opt/tmp/xkeen"		 # XKeen temporary directory
+xtmp_dir="/opt/tmp/xray"		 # Xray temporary directory
+mtmp_dir="/opt/tmp/mihomo"		 # Mihomo temporary directory
+xkeen_dir="/opt/sbin/.xkeen"		 # XKeen script directory
+xkeen_cfg="/opt/etc/xkeen"		 # XKeen configurations directory
+xkeen_log_dir="/opt/var/log/xkeen"	 # XKeen log directory
+xray_log_dir="/opt/var/log/xray"	 # Xray log directory
+initd_dir="/opt/etc/init.d"		 # init.d directory
+pid_dir="/opt/var/run"			 # Directory pid file
+backups_dir="/opt/backups"		 # Backup directory
+install_dir="/opt/sbin"			 # Installation directory
+geo_dir="/opt/etc/xray/dat"		 # Directory for dat
+cron_dir="/opt/var/spool/cron/crontabs"	 # Directory planner
+cron_file="root"			 # Scheduler file
+install_conf_dir="/opt/etc/xray/configs" # Xray configurations directory
+mihomo_conf_dir="/opt/etc/mihomo"	 # Mihomo configuration directory
 xkeen_conf_dir="$xkeen_dir/02_install/08_install_configs/02_configs_dir"
 xkeen_var_file="$xkeen_dir/01_info/01_info_variable.sh"
 register_dir="/opt/lib/opkg/info"
@@ -38,7 +38,7 @@ xkeen_current_version="1.1.3.9"
 xkeen_build="Beta"
 
 # -------------------------------------
-# Время
+# Time
 # -------------------------------------
 existing_content=$(cat "$status_file")
 installed_size=$(du -s "$install_dir" | cut -f1)
@@ -48,20 +48,20 @@ current_datetime=$(date "+%d-%b-%y_%H-%M")
 # -------------------------------------
 # URL
 # -------------------------------------
-xkeen_api_url="https://api.github.com/repos/jameszeroX/xkeen/releases/latest"			# url api для XKeen
-xkeen_jsd_url="https://data.jsdelivr.com/v1/package/gh/jameszeroX/xkeen"			# резервный url api для XKeen
-xkeen_tar_url="https://github.com/jameszeroX/XKeen/releases/latest/download/xkeen.tar.gz"	# url для загрузки XKeen
-xkeen_dev_url="https://raw.githubusercontent.com/jameszeroX/xkeen/main/test/xkeen.tar.gz"	# url для загрузки XKeen dev
-xray_api_url="https://api.github.com/repos/XTLS/Xray-core/releases"				# url api для Xray
-xray_jsd_url="https://data.jsdelivr.com/v1/package/gh/XTLS/Xray-core"				# резервный url api для Xray
-xray_zip_url="https://github.com/XTLS/Xray-core/releases/download"				# url для загрузки Xray
-mihomo_api_url="https://api.github.com/repos/MetaCubeX/mihomo/releases"				# url api для Mihomo
-mihomo_jsd_url="https://data.jsdelivr.com/v1/package/gh/MetaCubeX/mihomo"			# резервный url api для Mihomo
-mihomo_gz_url="https://github.com/MetaCubeX/mihomo/releases/download"				# url для загрузки Mihomo
-yq_dist_url="https://github.com/mikefarah/yq/releases/latest/download"				# url для загрузки Yq
-gh_proxy="https://ghfast.top"									# прокси для загрузки (https://ghproxy.link)
+xkeen_api_url="https://api.github.com/repos/jameszeroX/xkeen/releases/latest"			# url api for XKeen
+xkeen_jsd_url="https://data.jsdelivr.com/v1/package/gh/jameszeroX/xkeen"			# backup url api for XKeen
+xkeen_tar_url="https://github.com/jameszeroX/XKeen/releases/latest/download/xkeen.tar.gz"	# XKeen download url
+xkeen_dev_url="https://raw.githubusercontent.com/jameszeroX/xkeen/main/test/xkeen.tar.gz"	# XKeen dev download url
+xray_api_url="https://api.github.com/repos/XTLS/Xray-core/releases"				# url api for Xray
+xray_jsd_url="https://data.jsdelivr.com/v1/package/gh/XTLS/Xray-core"				# backup url api for Xray
+xray_zip_url="https://github.com/XTLS/Xray-core/releases/download"				# Xray download url
+mihomo_api_url="https://api.github.com/repos/MetaCubeX/mihomo/releases"				# url api for Mihomo
+mihomo_jsd_url="https://data.jsdelivr.com/v1/package/gh/MetaCubeX/mihomo"			# backup url api for Mihomo
+mihomo_gz_url="https://github.com/MetaCubeX/mihomo/releases/download"				# Mihomo download url
+yq_dist_url="https://github.com/mikefarah/yq/releases/latest/download"				# Yq download url
+gh_proxy="https://ghfast.top"									# proxy for downloading (https://ghproxy.link)
 
-# url для загрузки геофайлов
+# url for downloading geofiles
 refilter_url="https://github.com/1andrevich/Re-filter-lists/releases/latest/download/geosite.dat"
 refilterip_url="https://github.com/1andrevich/Re-filter-lists/releases/latest/download/geoip.dat"
 v2fly_url="https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat"
@@ -70,20 +70,20 @@ zkeen_url="https://github.com/jameszeroX/zkeen-domains/releases/latest/download/
 zkeenip_url="https://github.com/jameszeroX/zkeen-ip/releases/latest/download/zkeenip.dat"
 
 # -------------------------------------
-# Создание директорий и файлов
+# Creating directories and files
 # -------------------------------------
-mkdir -p "$xray_log_dir" || { echo "Ошибка: Не удалось создать директорию $xray_log_dir"; exit 1; }
-mkdir -p "$initd_dir" || { echo "Ошибка: Не удалось создать директорию $initd_dir"; exit 1; }
-mkdir -p "$pid_dir" || { echo "Ошибка: Не удалось создать директорию $pid_dir"; exit 1; }
-mkdir -p "$backups_dir" || { echo "Ошибка: Не удалось создать директорию $backups_dir"; exit 1; }
-mkdir -p "$install_dir" || { echo "Ошибка: Не удалось создать директорию $install_dir"; exit 1; }
-mkdir -p "$cron_dir" || { echo "Ошибка: Не удалось создать директорию $cron_dir"; exit 1; }
+mkdir -p "$xray_log_dir" || { echo "Output: No luck to create a director of $xray_log_dir"; exit 1; }
+mkdir -p "$initd_dir" || { echo "Error: Failed to create directory $initd_dir"; exit 1; }
+mkdir -p "$pid_dir" || { echo "Error: Failed to create directory $pid_dir"; exit 1; }
+mkdir -p "$backups_dir" || { echo "Error: Failed to create directory $backups_dir"; exit 1; }
+mkdir -p "$install_dir" || { echo "Error: Failed to create directory $install_dir"; exit 1; }
+mkdir -p "$cron_dir" || { echo "Error: Failed to create directory $cron_dir"; exit 1; }
 
 # -------------------------------------
-# Журналы
+# Journal
 # -------------------------------------
 xray_access_log="$xray_log_dir/access.log"
 xray_error_log="$xray_log_dir/error.log"
 
-touch "$xray_access_log" || { echo "Ошибка: Не удалось создать файл $xray_access_log"; exit 1; }
-touch "$xray_error_log" || { echo "Ошибка: Не удалось создать файл $xray_error_log"; exit 1; }
+touch "$xray_access_log" || { echo "Error: Failed to create $xray_access_log file"; exit 1; }
+touch "$xray_error_log" || { echo "Error: Failed to create $xray_error_log file"; exit 1; }

@@ -30,56 +30,56 @@ normalize_ports() {
     input="$1"
     tmpfile=$(mktemp)
 
-    # Разделяем входные данные по запятым и обрабатываем построчно
+    # Separate the input data by commas and process it line by line
     echo "$input" | tr ',' '\n' | while read port; do
-        # Удаляем пробелы
+        # Removing spaces
         port=$(echo "$port" | tr -d '[:space:]')
 
-        # Проверяем, является ли порт диапазоном
+        # Checking if the port is a range
         if echo "$port" | grep -q '[:-]'; then
-            # Заменяем '-' на ':'
+            # Replaceable '-' with ':'
             port=$(echo "$port" | tr '-' ':')
-            # Извлекаем начало и конец диапазона
+            # Extracting the beginning and end of the range
             start=$(echo "$port" | cut -d':' -f1)
             end=$(echo "$port" | cut -d':' -f2)
 
-            # Проверяем, что start и end — числа и не превышают 65535
+            # We check that start and end are numbers and do not exceed 65535
             if ! [ "$start" -ge 0 ] 2>/dev/null || ! [ "$end" -ge 0 ] 2>/dev/null || \
                [ "$start" -gt 65535 ] || [ "$end" -gt 65535 ]; then
                 continue
             fi
 
-            # Если первое число больше второго, меняем их местами
+            # If the first number is greater than the second, swap them
             if [ "$start" -gt "$end" ]; then
                 temp="$start"
                 start="$end"
                 end="$temp"
             fi
 
-            # Формируем диапазон в формате start:end
+            # We form a range in the start:end format
             normalized_port="$start:$end"
         else
-            # Если это одиночный порт, проверяем, что это число и не превышает 65535
+            # If this is a single port, check that this number does not exceed 65535
             if ! [ "$port" -ge 0 ] 2>/dev/null || [ "$port" -gt 65535 ]; then
                 continue
             fi
             normalized_port="$port"
         fi
 
-        # Добавляем нормализованный порт к временному файлу
+        # Adding a normalized port to the temporary file
         echo "$normalized_port" >> "$tmpfile"
     done
 
-    # Читаем результат из временного файла, сортируем и удаляем дубликаты
+    # Reading the result from a temporary file, sorting and removing duplicates
     if [ -s "$tmpfile" ]; then
         sort -n -u "$tmpfile" | tr '\n' ',' | sed 's/,$//'
     fi
 
-    # Удаляем временный файл
+    # Deleting a temporary file
     rm -f "$tmpfile"
 }
 
-# Функция валидации портов
+# Port Validation Function
 validate_and_clean_ports() {
     input_ports="$1"
     final_ports=""
@@ -104,7 +104,7 @@ validate_and_clean_ports() {
     echo "$final_ports"
 }
 
-# Функция обработки пользовательских портов
+# Custom Port Processing Function
 process_user_ports() {
     user_proxy_ports=""
     user_exclude_ports=""
@@ -154,7 +154,7 @@ add_ports_donor() {
     add_ports="donor"
     choice_port_xkeen
     if [ -z "$1" ]; then
-        echo -e "  ${red}Ошибка${reset}: список портов не может быть пустым"
+        echo -e "${red}Error${reset}: port list cannot be empty"
         return 1
     fi
 
@@ -177,18 +177,18 @@ add_ports_donor() {
     if [ -n "$excluded_ports_from_file" ]; then
         conflict_found=1
         display_ports=$(grep -v '^#' "$file_port_exclude" | grep -v '^$' | tr '\n' ',' | sed 's/,$//')
-        error_message="${error_message}  -> В файле (${yellow}$file_port_exclude${reset}) найдены порты: ${yellow}$display_ports${reset}\n"
+        error_message="${error_message} -> Ports found in file (${yellow}$file_port_exclude${reset}): ${yellow}$display_ports${reset}\n"
     fi
 
     if [ -n "$excluded_ports_from_var" ]; then
         conflict_found=1
-        error_message="${error_message}  -> В файле S99xkeen указаны порты исключения: ${yellow}$excluded_ports_from_var${reset}\n"
+        error_message="${error_message} -> The S99xkeen file specifies the exclusion ports: ${yellow}$excluded_ports_from_var${reset}\n"
     fi
 
     if [ "$conflict_found" -eq 1 ]; then
-        echo -e "  ${red}Ошибка${reset}: Невозможно добавить порты проксирования, так как уже заданы исключения"
+        echo -e "${red}Error${reset}: Cannot add proxy ports because exceptions are already set"
         echo -e "$error_message"
-        echo -e "  Сначала очистите все исключенные порты, затем повторите попытку"
+        echo -e "First clear all excluded ports, then try again"
         return 1
     fi
 
@@ -223,7 +223,7 @@ add_ports_donor() {
 
     ports=$(validate_and_clean_ports "$ports")
 
-    # Соединяем текущие порты с переданными и удаляем дубликаты
+    # We connect the current ports with the transferred ones and remove duplicates
     new_ports=
     if [ -z "$current_ports" ]; then
         new_ports="$ports"
@@ -247,7 +247,7 @@ add_ports_donor() {
 
     new_ports=$(echo $new_ports | sed 's/^ *//')
 
-    # Если new_ports пуст, не добавляем запятую
+    # If new_ports is empty, do not add a comma
     if [ -n "$new_ports" ]; then
         port_var="port_donor=\"$new_ports\""
     else
@@ -263,16 +263,16 @@ add_ports_donor() {
     done
 
     if [ -z "$added_ports" ]; then
-        echo -e "  Список портов ${red}не обновлен${reset}\n  Прокси-клиент ${yellow}уже работает${reset} на портах$duplicate_ports"
+        echo -e "List of ports ${red}not updated${reset}\n Proxy client ${yellow}already running${reset} on ports$duplicate_ports"
     else
-        echo -e "  Список портов ${green}успешно обновлен${reset}\n  Новые порты прокси-клиента$added_ports"
+        echo -e "Port list ${green}successfully updated${reset}\n New proxy client ports$added_ports"
         if [ -n "$duplicate_ports" ]; then
-            echo -e "  Прокси-клиент ${yellow}уже работает${reset} на портах$duplicate_ports"
+            echo -e "Proxy client ${yellow} is already running ${reset} on ports $duplicate_ports"
         fi
     fi
 
     if [ -n "$missing_ports" ]; then
-        echo -e "  ${red}Предупреждение${reset}: Рекомендуемые порты (${yellow}${missing_ports}${reset}) не добавлены в проксирование!"
+        echo -e "${red}Warning${reset}: Recommended ports (${yellow}${missing_ports}${reset}) are not added to proxying!"
     fi
 }
 
@@ -287,13 +287,13 @@ dell_ports_donor() {
     not_found_ports=
 
     if [ -z "$current_ports" ]; then
-        echo -e "  Прокси-клиент работает на ${yellow}всех${reset} портах\n  ${red}Отсутствуют${reset} конкретные порты для удаления"
+        echo -e "Proxy client runs on ${yellow}all${reset} ports\n ${red}No${reset} specific ports to remove"
         return
     fi
 
     if [ -z "$ports" ]; then
         new_ports=
-        echo -e "  Все порты ${green}успешно очищены${reset}\n  Прокси-клиент работает на ${yellow}всех${reset} портах"
+        echo -e "All ${green}ports have been cleared successfully${reset}\n Proxy client is running on ${yellow}all${reset} ports"
     else
         for port in $(echo "$ports" | tr ',' '\n'); do
             if echo "$new_ports" \
@@ -319,7 +319,7 @@ dell_ports_donor() {
         | sed 's/^ *//;s/ *,$//' | tr -d '\n'
     )
 
-    # Удаление запятых после последнего числа в переменной new_ports перед закрывающими кавычками
+    # Removing commas after the last number in the new_ports variable before the closing quotes
     new_ports=$(echo "$new_ports" | sed 's/,\+$//')
 
     awk -v new_ports="$new_ports" -F= '
@@ -337,11 +337,11 @@ dell_ports_donor() {
 
     if [ -n "$ports" ]; then
         if [ -z "$deleted_ports" ]; then
-            echo -e "  Список портов ${red}не обновлен${reset}\n  Прокси-клиент ${yellow}не работает${reset} на портах$not_found_ports"
+            echo -e "List of ports ${red}not updated${reset}\n Proxy client ${yellow}does not work${reset} on ports$not_found_ports"
         else
-            echo -e "  Список портов ${green}успешно обновлен${reset}\n  Удаленные порты$deleted_ports"
+            echo -e "Port list ${green}updated successfully${reset}\n Deleted ports$deleted_ports"
             if [ -n "$not_found_ports" ]; then
-                echo -e "  Прокси-клиент ${yellow}не работает${reset} с портами$not_found_ports"
+                echo -e "Proxy client ${yellow}doesn't work${reset} with ports$not_found_ports"
             fi
         fi
     fi
@@ -351,7 +351,7 @@ add_ports_exclude() {
     add_ports="exclude"
     choice_port_xkeen
     if [ -z "$1" ]; then
-        echo -e "  ${red}Ошибка${reset}: список портов не может быть пустым"
+        echo -e "${red}Error${reset}: port list cannot be empty"
         return 1
     fi
 
@@ -374,18 +374,18 @@ add_ports_exclude() {
     if [ -n "$donor_ports_from_file" ]; then
         conflict_found=1
         display_ports=$(grep -v '^#' "$file_port_proxying" | grep -v '^$' | tr '\n' ',' | sed 's/,$//')
-        error_message="${error_message}  -> В файле (${yellow}$file_port_proxying${reset}) найдены порты: ${yellow}$display_ports${reset}\n"
+        error_message="${error_message} -> Ports found in file (${yellow}$file_port_proxying${reset}): ${yellow}$display_ports${reset}\n"
     fi
 
     if [ -n "$donor_ports_from_var" ]; then
         conflict_found=1
-        error_message="${error_message}  -> В файле S99xkeen указаны порты проксирования: ${yellow}$donor_ports_from_var${reset}\n"
+        error_message="${error_message} -> The S99xkeen file specifies the proxy ports: ${yellow}$donor_ports_from_var${reset}\n"
     fi
 
     if [ "$conflict_found" -eq 1 ]; then
-        echo -e "  ${red}Ошибка${reset}: Невозможно добавить исключаемые порты, так как уже заданы порты проксирования"
+        echo -e "${red}Error${reset}: Cannot add excluded ports because proxy ports are already set"
         echo -e "$error_message"
-        echo -e "  Сначала очистите все порты проксирования, затем повторите попытку"
+        echo -e "First clear all proxy ports, then try again"
         return 1
     fi
 
@@ -396,10 +396,10 @@ add_ports_exclude() {
     )
     current_ports=${current_ports:-""}
 
-    # Удаляем возможную запятую в начале
+    # Remove possible comma at the beginning
     current_ports=$(echo "$current_ports" | sed 's/^,//')
 
-    # Соединяем текущие порты с переданными и удаляем дубликаты
+    # We connect the current ports with the transferred ones and remove duplicates
     new_ports=
     if [ -z "$current_ports" ]; then
         new_ports="$ports"
@@ -423,7 +423,7 @@ add_ports_exclude() {
 
     new_ports=$(echo $new_ports | sed 's/^ *//')
 
-    # Если new_ports пуст, не добавляем запятую
+    # If new_ports is empty, do not add a comma
     if [ -n "$new_ports" ]; then
         port_var="port_exclude=\"$new_ports\""
     else
@@ -439,14 +439,14 @@ add_ports_exclude() {
     done
 
     if [ -z "$added_ports" ]; then
-        echo -e "  ${yellow}Предупреждение${reset}"
-		echo -e "  Список портов-исключений ${red}не обновлен${reset}\n  Прокси-клиент уже не работает с портами$duplicate_ports"
+        echo -e "${yellow}Warning${reset}"
+		echo -e "The list of exception ports ${red}has not been updated${reset}\n The proxy client no longer works with ports$duplicate_ports"
     else
-        echo -e "  ${green}Успех${reset}"
-		echo -e "  Список портов-исключений ${green}успешно обновлен${reset}\n  Новые порты с которыми прокси-клиент не будет работать$added_ports"
+        echo -e "${green}Success${reset}"
+		echo -e "List of exception ports ${green}successfully updated${reset}\n New ports with which the proxy client will not work$added_ports"
         if [ -n "$duplicate_ports" ]; then
-            echo -e "  ${yellow}Ошибка${reset}"
-			echo -e "  Прокси-клиент ${yellow}уже не работает${reset} с портами$duplicate_ports"
+            echo -e "${yellow}Error${reset}"
+			echo -e "Proxy client ${yellow}no longer works${reset} with ports$duplicate_ports"
         fi
     fi
 }
@@ -462,14 +462,14 @@ dell_ports_exclude() {
     not_found_ports=
 
     if [ -z "$current_ports" ]; then
-        echo -e "  Прокси-клиент работает на ${yellow}всех${reset} портах\n  ${red}Отсутствуют${reset} конкретные порты для удаления"
+        echo -e "Proxy client runs on ${yellow}all${reset} ports\n ${red}No${reset} specific ports to remove"
         return
     fi
 
     if [ -z "$ports" ]; then
         new_ports=
-        echo -e "  ${green}Успех${reset}"
-        echo -e "  Все порты очищены\n  Прокси-клиент работает на ${yellow}всех${reset} портах"
+        echo -e "${green}Success${reset}"
+        echo -e "All ports cleared\n Proxy client running on ${yellow}all${reset} ports"
     else
         for port in $(echo "$ports" | tr ',' '\n'); do
             if echo "$new_ports" \
@@ -495,7 +495,7 @@ dell_ports_exclude() {
         | sed 's/^ *//;s/ *,$//' | tr -d '\n'
     )
 
-    # Удаление запятых после последнего числа в переменной new_ports перед закрывающими кавычками
+    # Removing commas after the last number in the new_ports variable before the closing quotes
     new_ports=$(echo "$new_ports" | sed 's/,\+$//')
 
     awk -v new_ports="$new_ports" -F= '
@@ -513,20 +513,20 @@ dell_ports_exclude() {
 
     if [ -n "$ports" ]; then
         if [ -z "$deleted_ports" ]; then
-            echo -e "  ${yellow}Предупреждение${reset}"
-			echo -e "  Список портов-исключений ${red}не обновлен${reset}\n  Прокси-клиент не имеет исключеных портов$not_found_ports"
+            echo -e "${yellow}Warning${reset}"
+			echo -e "Exception port list ${red}not updated${reset}\n Proxy client has no excluded ports$not_found_ports"
         else
-            echo -e "  ${green}Успех${reset}"
-			echo -e "  Список портов-исключений успешно обновлен\n  Удаленные порты$deleted_ports"
+            echo -e "${green}Success${reset}"
+			echo -e "The list of exclusion ports was successfully updated\n Deleted ports$deleted_ports"
             if [ -n "$not_found_ports" ]; then
-                 echo -e "  ${yellow}Ошибка${reset}"
-				echo -e "  Прокси-клиент ${yellow}не работает${reset} с портами$not_found_ports"
+                 echo -e "${yellow}Error${reset}"
+				echo -e "Proxy client ${yellow}doesn't work${reset} with ports$not_found_ports"
             fi
         fi
     fi
 }
 
-# Получить список портов проксирования
+# Get a list of proxy ports
 get_ports_donor() {
     port_donor=$(grep -m1 '^port_donor=' $initd_dir/S99xkeen | cut -d'=' -f2 | tr -d '"')
     port_exclude=$(grep -m1 '^port_exclude=' $initd_dir/S99xkeen | cut -d'=' -f2 | tr -d '"')
@@ -534,14 +534,14 @@ get_ports_donor() {
     process_user_ports
     
     if [ -z "$port_donor" ] || [ "$port_donor" = "" ]; then
-        echo -e "  Прокси-клиент работает ${yellow}на всех портах${reset}"
+        echo -e "Proxy client running ${yellow}on all ports${reset}"
     else
         formatted_ports=$(echo "$port_donor" | tr ',' '\n' | sed 's/^/     /')
-        echo -e "  Прокси-клиент работает на портах\n${green}$formatted_ports${reset}"
+        echo -e "Proxy client running on ports\n${green}$formatted_ports${reset}"
     fi
 }
 
-# Получить список портов, исключённых из проксирования
+# Get a list of ports excluded from proxying
 get_ports_exclude() {
     port_donor=$(grep -m1 '^port_donor=' $initd_dir/S99xkeen | cut -d'=' -f2 | tr -d '"')
     port_exclude=$(grep -m1 '^port_exclude=' $initd_dir/S99xkeen | cut -d'=' -f2 | tr -d '"')
@@ -549,9 +549,9 @@ get_ports_exclude() {
     process_user_ports
     
     if [ -z "$port_exclude" ] || [ "$port_exclude" = "" ]; then
-        echo -e "  ${yellow}Нет портов${reset} исключенных из проксирования"
+        echo -e "${yellow}No ports${reset} excluded from proxying"
     else
         formatted_ports=$(echo "$port_exclude" | tr ',' '\n' | sed 's/^/     /')
-        echo -e "  Из проксирования исключены порты\n${green}$formatted_ports${reset}"
+        echo -e "Ports excluded from proxying\n${green}$formatted_ports${reset}"
     fi
 }

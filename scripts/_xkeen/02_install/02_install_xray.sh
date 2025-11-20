@@ -1,18 +1,18 @@
-# Функция для установки Xray
+# Function for installing Xray
 install_xray() {
-    echo -e "  ${yellow}Выполняется установка${reset} Xray. Пожалуйста, подождите..."
+    echo -e "${yellow}${reset} Xray is being installed. Please wait..."
 
-    # Определение переменных
+    # Defining Variables
     xray_archive="${xtmp_dir}/xray.zip"
 
-    # Проверка наличия архива Xray
+    # Checking the presence of an Xray archive
     if [ -f "${xray_archive}" ]; then
 
         if [ -f "$install_dir/xray" ]; then
             mv "$install_dir/xray" "$install_dir/xray_bak"
         fi
 
-        # Распаковка архива Xray
+        # Unpacking the Xray archive
         if [ -d "${xtmp_dir}/xray" ]; then
             rm -r "${xtmp_dir}/xray"
         fi
@@ -20,16 +20,16 @@ install_xray() {
         if unzip -q "${xray_archive}" -d "${xtmp_dir}/xray"; then
             mv "${xtmp_dir}/xray/xray" $install_dir/
             chmod +x $install_dir/xray
-            echo -e "  Xray ${green}успешно установлен${reset}"
+            echo -e "Xray ${green}installed successfully${reset}"
         fi
 
-        # Удаление архива Xray
+        # Deleting an Xray archive
         rm "${xray_archive}"
 
-        # Удаление временных файлов
+        # Deleting temporary files
         rm -rf "${xtmp_dir}/xray"
 
-        # Фикс для новых ядер xray
+        # Fix for new xray kernels
         if [ -d "$install_conf_dir" ]; then
             for file in "$install_conf_dir"/*; do
                 [ -f "$file" ] || continue

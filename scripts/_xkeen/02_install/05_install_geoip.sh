@@ -1,8 +1,8 @@
-# Функция для установки и обновления GeoIP
+# Function for installing and updating GeoIP
 install_geoip() {
-    mkdir -p "$geo_dir" || { echo "Ошибка: Не удалось создать директорию $geo_dir"; exit 1; }
+    mkdir -p "$geo_dir" || { echo "Error: Failed to create directory $geo_dir"; exit 1; }
 
-    # Установка/обновление файла
+    # File installation/update
     process_geoip_file() {
         url=$1
         filename=$2
@@ -11,44 +11,44 @@ install_geoip() {
 
         temp_file=$(mktemp)
         
-        # Первая попытка: прямая загрузка
+        # First try: direct download
         if curl -m 10 -L -o "$temp_file" "$url" > /dev/null 2>&1; then
             if [ -s "$temp_file" ]; then
                 mv "$temp_file" "$geo_dir/$filename"
                 if [ "$update_flag" = true ]; then
-                    echo -e "  $display_name ${green}успешно обновлен${reset}"
+                    echo -e "$display_name ${green}updated successfully${reset}"
                 else
-                    echo -e "  $display_name ${green}успешно установлен${reset}"
+                    echo -e "$display_name ${green}installed successfully${reset}"
                 fi
                 return 0
             else
-                echo -e "  ${red}Неизвестная ошибка${reset} при установке $display_name"
+                echo -e "${red}Unknown error${reset} when installing $display_name"
                 return 1
             fi
         else
-            # Вторая попытка: загрузка через прокси
+            # Second try: downloading via proxy
             if curl -m 10 -L -o "$temp_file" "$gh_proxy/$url" > /dev/null 2>&1; then
                 if [ -s "$temp_file" ]; then
                     mv "$temp_file" "$geo_dir/$filename"
                     if [ "$update_flag" = true ]; then
-                        echo -e "  $display_name ${green}успешно обновлен через прокси${reset}"
+                        echo -e "$display_name ${green}updated successfully via proxy${reset}"
                     else
-                        echo -e "  $display_name ${green}успешно установлен через прокси${reset}"
+                        echo -e "$display_name ${green}installed successfully via proxy${reset}"
                     fi
                     return 0
                 else
-                    echo -e "  ${red}Неизвестная ошибка${reset} при установке $display_name"
+                    echo -e "${red}Unknown error${reset} when installing $display_name"
                     return 1
                 fi
             else
                 rm -f "$temp_file"
-                echo -e "  ${red}Ошибка${reset} при загрузке $display_name. Проверьте соединение с интернетом или повторите позже"
+                echo -e "${red}Error${reset} loading $display_name. Check your internet connection or try again later"
                 return 1
             fi
         fi
     }
 
-    # Установка GeoIP Re:filter
+    # Installing GeoIP Re:filter
     if [ "$install_refilter_geoip" = true ] || [ "$update_refilter_geoip" = true ]; then
         process_geoip_file \
             "$refilterip_url" \
@@ -57,7 +57,7 @@ install_geoip() {
             "$update_refilter_geoip"
     fi
 
-    # Установка GeoIP V2Fly
+    # Installing GeoIP V2Fly
     if [ "$install_v2fly_geoip" = true ] || [ "$update_v2fly_geoip" = true ]; then
         process_geoip_file \
             "$v2flyip_url" \
@@ -66,7 +66,7 @@ install_geoip() {
             "$update_v2fly_geoip"
     fi
 
-    # Установка GeoIP ZKeenIP
+    # Installing GeoIP ZKeenIP
     if [ "$install_zkeenip_geoip" = true ] || [ "$update_zkeenip_geoip" = true ]; then
         datfile="geoip_zkeenip.dat"
         [ -L "$geo_dir/geoip_zkeenip.dat" ] || [ -f "$geo_dir/zkeenip.dat" ] && datfile="zkeenip.dat"
@@ -75,7 +75,7 @@ install_geoip() {
             "$datfile" \
             "GeoIP ZKeenIP" \
             "$update_zkeenip_geoip"
-        # Создание симлинков для совместимости
+        # Creating symlinks for compatibility
         if [ "$datfile" = "geoip_zkeenip.dat" ]; then
             rm -f "$geo_dir/zkeenip.dat"
             ln -sf "$geo_dir/geoip_zkeenip.dat" "$geo_dir/zkeenip.dat"

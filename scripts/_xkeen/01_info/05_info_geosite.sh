@@ -1,4 +1,4 @@
-# Функция для проверки наличия и записи информации о базах GeoSite
+# Function for checking the availability and recording information about GeoSite databases
 info_geosite() {
     update_refilter_geosite=false
     update_v2fly_geosite=false

@@ -1,9 +1,9 @@
-# Функция для получения информации о версии Xray
+# Function to get Xray version information
 info_version_xray() {
 
-    # Проверяем, установлен ли Xray
+    # Checking if Xray is installed
     if [ "$xray_installed" = "installed" ]; then
-        # Если Xray установлен, получаем текущую версию
+        # If Xray is installed, we get the current version
         xray_current_version=$("$install_dir/xray" -version 2>&1 | grep -o -E 'Xray [0-9]+\.[0-9]+\.[0-9]+' | cut -d ' ' -f 2)
     fi
 }

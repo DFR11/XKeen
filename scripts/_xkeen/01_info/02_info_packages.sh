@@ -1,8 +1,8 @@
-# Функция для проверки наличия необходимых пакетов
+# Function to check the presence of required packages
 info_packages() {
     package_name="$1"
     
-    # Проверяем, установлен ли пакет
+    # Checking if the package is installed
     if opkg list-installed | grep -q "$package_name"; then
         package_status="installed"
     else
@@ -10,46 +10,46 @@ info_packages() {
     fi
 }
 
-# Проверка наличия пакета "lscpu"
+# Checking for the presence of the "lscpu" package
 info_packages "lscpu"
 info_packages_lscpu=$package_status
 
-# Проверка наличия пакета "coreutils-uname"
+# Checking for package "coreutils-uname"
 info_packages "coreutils-uname"
 info_packages_uname=$package_status
 
-# Проверка наличия пакета "coreutils-nohup"
+# Checking for package "coreutils-nohup"
 info_packages "coreutils-nohup"
 info_packages_nohup=$package_status
 
-# Проверка наличия пакета "curl"
+# Checking for package "curl"
 info_packages "curl"
 info_packages_curl=$package_status
 
-# Проверка наличия пакета "jq"
+# Checking for package "jq"
 info_packages "jq"
 info_packages_jq=$package_status
 
-# Проверка наличия пакета "libc"
+# Checking for package "libc"
 info_packages "libc"
 info_packages_libc=$package_status
 
-# Проверка наличия пакета "libssp"
+# Checking for package "libssp"
 info_packages "libssp"
 info_packages_libssp=$package_status
 
-# Проверка наличия пакета "librt"
+# Checking for package "librt"
 info_packages "librt"
 info_packages_librt=$package_status
 
-# Проверка наличия пакета "libpthread"
+# Checking for package "libpthread"
 info_packages "libpthread"
 info_packages_libpthread=$package_status
 
-# Проверка наличия пакета "ca-bundle"
+# Checking for the presence of the "ca-bundle" package
 info_packages "ca-bundle"
 info_packages_cabundle=$package_status
 
-# Проверка наличия пакета "iptables"
+# Checking for the presence of the "iptables" package
 info_packages "iptables"
 info_packages_iptables=$package_status

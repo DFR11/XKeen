@@ -1,4 +1,4 @@
-# Функция для проверки наличия и записи информации о базах GeoIP
+# Function for checking the availability and recording information about GeoIP databases
 info_geoip() {
     update_refilter_geoip=false
     update_v2fly_geoip=false

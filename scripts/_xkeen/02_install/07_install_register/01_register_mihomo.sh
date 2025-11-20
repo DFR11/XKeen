@@ -1,4 +1,4 @@
-# Регистрация Mihomo
+# Registration Mihomo
 
 register_mihomo_list() {
     cd "$register_dir/" || exit
@@ -26,7 +26,7 @@ EOF
 }
 
 register_mihomo_status() {
-    # Генерация новой записи
+    # Generating a new entry
     echo "Package: mihomo_s" > new_entry.txt
     echo "Version: $mihomo_current_version" >> new_entry.txt
     echo "Depends: yq_s" >> new_entry.txt
@@ -34,10 +34,10 @@ register_mihomo_status() {
     echo "Architecture: $status_architecture" >> new_entry.txt
     echo "Installed-Time: $(date +%s)" >> new_entry.txt
 
-    # Чтение существующего содержимого файла "status"
+    # Reading the existing contents of the "status" file
     existing_content=$(cat "$status_file")
 
-    # Объединение существующего содержимого и новой записи
+    # Merging existing content and new entry
     echo -e "\n$(cat new_entry.txt)" >> "$status_file"
 }
 
@@ -64,17 +64,17 @@ EOF
 }
 
 register_yq_status() {
-    # Генерация новой записи
+    # Generating a new entry
     echo "Package: yq_s" > new_entry.txt
     echo "Version: $yq_current_version" >> new_entry.txt
     echo "Status: install user installed" >> new_entry.txt
     echo "Architecture: $status_architecture" >> new_entry.txt
     echo "Installed-Time: $(date +%s)" >> new_entry.txt
 
-    # Чтение существующего содержимого файла "status"
+    # Reading the existing contents of the "status" file
     existing_content=$(cat "$status_file")
 
-    # Объединение существующего содержимого и новой записи
+    # Merging existing content and new entry
     echo -e "\n$(cat new_entry.txt)" >> "$status_file"
 }
 
@@ -139,7 +139,7 @@ rules:
 EOF
 
         echo
-        echo "  Добавлен шаблон конфигурационного файла Mihomo:"
+        echo "Added Mihomo configuration file template:"
         echo -e "  ${yellow}config.yaml${reset}"
         sleep 2
     fi

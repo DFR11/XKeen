@@ -1,30 +1,30 @@
-# Загрузка XKeen
+# Download XKeen
 download_xkeen() {
     xkeen_dist=$(mktemp)
     mkdir -p "$tmp_dir"
-    echo -e "  ${yellow}Выполняется загрузка${reset} XKeen"
+    echo -e "${yellow}Loading ${reset} XKeen"
 
-    # Первая попытка: прямая загрузка
+    # First try: direct download
     if curl -m 10 -L -o "$xkeen_dist" "$xkeen_tar_url" &> /dev/null; then
         if [ -s "$xkeen_dist" ]; then
             mv "$xkeen_dist" "$tmp_dir/xkeen.tar.gz"
-            echo -e "  XKeen ${green}успешно загружен${reset}"
+            echo -e "XKeen ${green}uploaded successfully${reset}"
             return 0
         else
-            echo -e "  ${red}Ошибка${reset}: Загруженный файл XKeen поврежден"
+            echo -e "${red}Error${reset}: The downloaded XKeen file is corrupt"
         fi
     else
-        # Вторая попытка: загрузка через прокси
+        # Second try: downloading via proxy
         if curl -m 10 -L -o "$xkeen_dist" "$gh_proxy/$xkeen_tar_url" &> /dev/null; then
             if [ -s "$xkeen_dist" ]; then
                 mv "$xkeen_dist" "$tmp_dir/xkeen.tar.gz"
-                echo -e "  XKeen ${green}успешно загружен через прокси${reset}"
+                echo -e "XKeen ${green}successfully downloaded via proxy${reset}"
                 return 0
             else
-                echo -e "  ${red}Ошибка${reset}: Загруженный файл XKeen поврежден"
+                echo -e "${red}Error${reset}: The downloaded XKeen file is corrupt"
             fi
         else
-            echo -e "  ${red}Ошибка${reset}: Не удалось загрузить XKeen. Проверьте соединение с интернетом или повторите позже"
+            echo -e "${red}Error${reset}: Failed to load XKeen. Check your internet connection or try again later"
         fi
     fi
     rm -f "$xkeen_dist"

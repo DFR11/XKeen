@@ -1,23 +1,23 @@
-# Запрос на смену канала обновлений XKeen (Stable/Dev)
+# Request to change XKeen update channel (Stable/Dev)
 choice_channel_xkeen() {
     echo
-    echo -e "  Текущий канал обновлений ${yellow}XKeen${reset}:"
+    echo -e "Current update channel ${yellow}XKeen${reset}:"
     
     if [ "$xkeen_build" = "Stable" ]; then
-        echo -e "  Стабильная версия (${green}Stable${reset})"
+        echo -e "Stable version (${green}Stable${reset})"
         echo
-        echo "     1. Переключиться на канал разработки"
-        echo "     0. Остаться на стабильной версии"
+        echo "1. Switch to the development channel"
+        echo "0. Stay on stable version"
     else
-        echo -e "  Версия в разработке (${green}$xkeen_build${reset})"
+        echo -e "Version under development (${green}$xkeen_build${reset})"
         echo
-        echo "     1. Переключиться на стабильную версию"
-        echo "     0. Остаться на версии разработки"
+        echo "1. Switch to stable version"
+        echo "0. Stay on development version"
     fi
 
     echo
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         if echo "$choice" | grep -qE '^[0-1]$'; then
             case "$choice" in
                 1)
@@ -29,12 +29,12 @@ choice_channel_xkeen() {
                     return 0
                     ;;
                 0)
-                    echo "  Остаёмся на текущей ветке XKeen"
+                    echo "We remain on the current XKeen branch"
                     return 0
                     ;;
             esac
         else
-            echo -e "  ${red}Некорректный ввод${reset}"
+            echo -e "${red}Invalid input${reset}"
         fi
     done
 }
@@ -44,33 +44,33 @@ change_channel_xkeen() {
     if [ "$choice_build" = "Stable" ]; then
         sed -i 's/^xkeen_build="[^"]*"/xkeen_build="Stable"/' "$xkeen_var_file"
         if grep -q '^xkeen_build="Stable"$' "$xkeen_var_file"; then
-            echo -e "  Канал получения обновлений ${yellow}XKeen${reset} переключен на ${green}стабильную ветку${reset}"
+            echo -e "Update channel ${yellow}XKeen${reset} switched to ${green}stable branch${reset}"
         else
-            echo -e "  ${red}Возникла ошибка${reset} при переключении канала обновлений"
+            echo -e "${red}Error${reset} occurred when switching update channel"
             unset choice_build
         fi
     elif [ "$choice_build" = "Dev" ]; then
         sed -i 's/xkeen_build="Stable"/xkeen_build="Dev"/' $xkeen_var_file
         if grep -q '^xkeen_build="Dev"$' "$xkeen_var_file"; then
-            echo -e "  Канал получения обновлений ${yellow}XKeen${reset} переключен на ${green}ветку разработки${reset}"
+            echo -e "Update channel ${yellow}XKeen${reset} switched to ${green}development branch${reset}"
         else
-            echo -e "  ${red}Возникла ошибка${reset} при переключении канала обновлений"
+            echo -e "${red}Error${reset} occurred when switching update channel"
             unset choice_build
         fi
     fi
     if [ -n "$choice_build" ]; then
         echo
-        echo -e "  Командой ${green}xkeen -uk${reset} вы можете обновить ${yellow}XKeen${reset} до последней версии в выбраной ветке"
+        echo -e "With the command ${green}xkeen -uk${reset} you can update ${yellow}XKeen${reset} to the latest version in the selected branch"
     fi
 }
 
 change_autostart_xkeen() {
     if grep -q 'start_auto="on"' $initd_dir/S99xkeen; then
         sed -i 's/start_auto="on"/start_auto="off"/' $initd_dir/S99xkeen
-        [ -z "$bypass_autostart_msg" ] && echo -e "  Автозапуск XKeen ${red}отключен${reset}"
+        [ -z "$bypass_autostart_msg" ] && echo -e "XKeen autorun ${red}disabled${reset}"
     elif grep -q 'start_auto="off"' $initd_dir/S99xkeen; then
         sed -i 's/start_auto="off"/start_auto="on"/' $initd_dir/S99xkeen
-        echo -e "  Автозапуск XKeen ${green}включен${reset}"
+        echo -e "XKeen autostart ${green}enabled${reset}"
     fi
 }
 
@@ -80,17 +80,17 @@ choice_autostart_xkeen() {
     fi
 
     echo
-    echo -e "  Добавить ${yellow}XKeen${reset} в автозагрузку при включении роутера?"
+    echo -e "Add ${yellow}XKeen${reset} to startup when turning on the router?"
     echo
-    echo "     1. Да"
-    echo "     0. Нет"
+    echo "1. Yes"
+    echo "0. No"
     echo
 
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             1)
-                echo -e "  Автозагрузка XKeen ${green}включена${reset}"
+                echo -e "XKeen autoboot ${green}enabled${reset}"
                 return 0
                 ;;
             0)
@@ -99,7 +99,7 @@ choice_autostart_xkeen() {
                 return 0
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done
@@ -107,14 +107,14 @@ choice_autostart_xkeen() {
 
 choice_redownload_xkeen() {
     echo
-    echo -e "  Выберите вариант переустановки ${yellow}XKeen${reset}"
+    echo -e "Select the reinstallation option ${yellow}XKeen${reset}"
     echo
-    echo "     1. Загрузить дистрибутив XKeen из интернета"
-    echo "     0. Локальная переустановка XKeen"
+    echo "1. Download the XKeen distribution from the Internet"
+    echo "0. Local reinstallation of XKeen"
     echo
 
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             1)
                 redownload_xkeen="yes"
@@ -124,7 +124,7 @@ choice_redownload_xkeen() {
                 return 0
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done
@@ -132,14 +132,14 @@ choice_redownload_xkeen() {
 
 choice_remove() {
     echo
-    echo -e "  Вы действительно хотите ${red}удалить ${choice_for_remove}${reset}?"
+    echo -e "Are you sure you want to ${red}remove ${choice_for_remove}${reset}?"
     echo
-    echo "     1. Да, хочу удалить"
-    echo "     0. Нет, передумал(а)"
+    echo "1. Yes, I want to delete"
+    echo "0. No, I changed my mind"
     echo
 
     while true; do
-        read -r -p "  Ваш выбор (1 или 0): " choice
+        read -r -p "Your choice (1 or 0):" choice
         case "$choice" in
             1)
                 return 0
@@ -148,7 +148,7 @@ choice_remove() {
                 exit 0
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done
@@ -161,14 +161,14 @@ choice_port_xkeen() {
     elif [ "$add_ports" = "exclude" ]; then
         echo -e "  Иключать порты из проксирования рекомендуется в файле ${yellow}/opt/etc/xkeen/port_exclude.lst${reset}"
     fi
-    echo -e "  Продолжить ${red}не рекомендуемый${reset} способ?"
+    echo -e "Continue ${red}not recommended${reset} method?"
     echo
-    echo "     1. Да, продолжаем"
-    echo -e "     0. Отмена, воспользуюсь ${green}рекомендуемым${reset} способом"
+    echo "1. Yes, let's continue"
+    echo -e "0. Cancel, I will use ${green}recommended${reset} method"
     echo
 
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             1)
                 return 0
@@ -177,7 +177,7 @@ choice_port_xkeen() {
                 exit 0
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done

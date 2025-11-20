@@ -1,4 +1,4 @@
-# Функция для установки файлов конфигурации Xray
+# Function for installing Xray configuration files
 install_configs() {
     if [ ! -d "$install_conf_dir" ]; then
         mkdir -p "$install_conf_dir"
@@ -12,7 +12,7 @@ install_configs() {
     for file in $xkeen_files; do
         filename=$(basename "$file")
         cp "$file" "$install_conf_dir/"
-        echo "  Добавлен шаблон конфигурационного файла Xray:"
+        echo "Added Xray configuration file template:"
         echo -e "  ${yellow}$filename${reset}"
         sleep 1
     done

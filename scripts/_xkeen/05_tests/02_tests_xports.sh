@@ -1,4 +1,4 @@
-# Определение на каких портах слушает ядро прокси
+# Determining which ports the proxy core listens on
 tests_ports_client() {
 
     if pidof "xray" >/dev/null; then
@@ -7,14 +7,14 @@ tests_ports_client() {
         name_client=mihomo
     else
         echo
-        echo "  Определение портов прослушивания возможно только при работающем XKeen"
-        echo "  Запустите XKeen командой 'xkeen -start'"
+        echo "Determining listening ports is only possible when XKeen is running"
+        echo "Launch XKeen with the command'xkeen -start'"
         exit 1
     fi
 
     listening_ports_tcp=
     listening_ports_udp=
-    output="  $name_client ${green}слушает${reset}"
+    output="$name_client ${green}listening${reset}"
 
     listening_ports_tcp=$(netstat -ltunp | grep "$name_client" | grep "tcp")
     listening_ports_udp=$(netstat -ltunp | grep "$name_client" | grep "udp")
@@ -42,19 +42,19 @@ tests_ports_client() {
             full_address=$(echo "$line" | awk '{print $4}')
             
             if echo "$full_address" | grep -q '^:::[0-9]'; then
-                # Если IPv4 отображается как :::port
+                # If IPv4 appears as :::port
                 gateway="0.0.0.0"
                 port=$(echo "$full_address" | awk -F':::' '{print $2}')
             elif echo "$full_address" | grep -q '^\[::\]'; then
-                # Явный IPv6 [::]:port
+                # Explicit IPv6 [::]:port
                 gateway="[::]"
                 port=$(echo "$full_address" | awk -F'\\]:' '{print $2}')
             elif echo "$full_address" | grep -q '\\]:'; then
-                # Обычный IPv6 [addr]:port
+                # Regular IPv6 [addr]:port
                 gateway=$(echo "$full_address" | awk -F'\\]:' '{print $1}')"]"
                 port=$(echo "$full_address" | awk -F'\\]:' '{print $2}')
             elif echo "$full_address" | grep -q ':'; then
-                # Обычный IPv4
+                # Regular IPv4
                 gateway=$(echo "$full_address" | cut -d':' -f1)
                 port=$(echo "$full_address" | cut -d':' -f2)
             fi
@@ -63,12 +63,12 @@ tests_ports_client() {
                 printf "%b\n" "$output"
                 printed=true
             fi
-            printf "\n     %bШлюз%b %s\n     %bПорт%b %s\n     %bПротокол%b %s\n" \
+            printf "\n %bSlut%b %s\n %b." \
                    "$italic" "$reset" "$gateway" \
                    "$italic" "$reset" "$port" \
                    "$italic" "$reset" "$protocol"
         done
     else
-        printf "%b\n" "  $name_client ${red}не слушает${reset} на каких-либо портах"
+        printf "%b\n" "$name_client ${red}does not listen to ${reset} on any ports"
     fi
 }
