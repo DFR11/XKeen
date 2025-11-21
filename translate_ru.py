@@ -142,7 +142,7 @@ def main():
     exclude_dirs = ['.git', '.github']
     
     # --- 关键修改：在这里添加 'config' 这种无后缀文件 ---
-    target_files = ['config', 'Makefile', 'xkeen', 'OffLine_install.md', 'FileDescriptors.md'] 
+    target_files = ['config', 'Makefile', 'xkeen', 'OffLine_install', 'FileDescriptors'] 
     target_exts = ['.sh', '.cfg', '.conf', '.list', '.lst', '.md'] 
 
     for root, dirs, files in os.walk("."):
