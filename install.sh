@@ -1,6 +1,6 @@
 #!/bin/sh
 
-url="https://github.com/jameszeroX/XKeen/releases/latest/download/xkeen.tar.gz"
+url="https://github.com/DFR11/XKeen/releases/latest/download/xkeen.tar.gz"
 if ! curl -OL "$url"; then
     if ! curl -OL "https://ghfast.top/$url"; then
         echo "Error: failed to load xkeen.tar.gz"
