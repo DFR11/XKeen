@@ -11,23 +11,7 @@
 Comparison of the fork with the original XKeen
 
 Changes:
-- Fixed adding ports to exceptions (previously the `xkeen -ape` command had to be interrupted by ctrl+c)
-- Fixed the joint operation of TProxy and socks5 modes (previously Xkeen was launched in Mixed mode, which led to transparent proxying not working)
-- Fixed autostart of XKeen when the router starts (previously XKeen in some cases did not start or was launched for the entire device, and not just for its policy - [FAQ p. 12](https://jameszero.net/faq-xkeen.htm#12))
-- The logic for downloading XKeen, Xray, Mihomo and GeoFile from the Internet has been reworked, reducing the likelihood of their damage
-- The logic for applying iptables and ip6tables rules has been reworked (previously XKeen applied all rules, even when the IPv6 component was not installed)
-- The logic for adding and removing proxy ports and excluded ports has been reworked
-- When updating geofiles, adding/removing proxy ports or exclusion ports, as well as performing other settings that require restarting XKeen, the proxy client is now restarted if it was previously running
-- When running `xkeen -d` without a numeric parameter, information about the current autorun delay is now displayed
-- When starting or restarting XKeen, information about the operating mode is now displayed - TProxy, Mixed, Redirect, Other
-- Outdated GeoSite and GeoIP antifilter-community have been replaced with [Re:filter](https://github.com/1andrevich/Re-filter-lists) databases
-- The scheduler tasks for updating GeoSite and GeoIP have been combined. In this regard, the launch parameters `-ugs`, `-ugi`, `-ugsc`, `-ugic`, `-dgsc`, `-dgic` have been removed
-- The `-ux` startup option for Xray kernel upgrade now supports upgrading/downgrading
-- Correct uninstallation of xray-core (previously the xray package was not removed during uninstallation)
-- Help (`xkeen -h`) tab-aligned and increased text contrast
-- Refactoring script code
-- Updating xray-core configuration files
-
+- translate ru language to  en
 Added:
 - Mihomo kernel support
 - Ability to change the proxy kernel (Xray/Mihomo) with the `-xray` and `-mihomo` parameters
