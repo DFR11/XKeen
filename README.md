@@ -65,7 +65,7 @@ All launch parameters with their descriptions are available in the help for the 
 ### Installation procedure
 ```
 opkg update && opkg upgrade && opkg install curl tar
-curl -OL https://raw.githubusercontent.com/jameszeroX/XKeen/main/install.sh
+curl -OL https://raw.githubusercontent.com/DFR11/XKeen/refs/heads/main/install.sh
 chmod +x install.sh
 ./install.sh
 ```
