@@ -1,9 +1,9 @@
-# Пользовательские исключения IPv4
+# IPv4 Custom Exceptions
 192.168.1.0/24
 10.10.10.10
 
-# Пользовательские исключения IPv6
+# IPv6 Custom Exceptions
 2001:db8::/32
 fd00::/8
 
-# Комментарии и пустые строки игнорируются
+# Comments and empty lines are ignored

@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# Определение директории, где находится xkeen
+# Determining the directory where xkeen is located
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 
-# Скрываем основную директорию xkeen
+# Hiding the main xkeen directory
 install_xkeen_rename() {
     source_dir="_xkeen"
     target_dir=".xkeen"
@@ -24,62 +24,62 @@ add_chmod_init() {
     chmod +x $initd_dir/S99xkeen
 }
 
-# Импортируем модули
+# Importing modules
 . "$script_dir/.xkeen/import.sh"
 	
 xkeen_info() {
     opkg update >/dev/null 2>&1
     opkg upgrade >/dev/null 2>&1
-    # Проверяем установку пакетов
+    # Checking the installation of packages
     info_packages
 
-    # Собираем необходимую информацию о процессоре
+    # Collecting the necessary information about the processor
     info_cpu
 
-    # Проверяем установку Xray
+    # Checking the Xray installation
     info_xray
 
-    # Проверяем установку Mihomo
+    # Checking the Mihomo installation
     info_mihomo
 
-    # Проверяем установленные базы GeoSite
+    # Checking installed GeoSite databases
     info_geosite
 
-    # Проверяем установленные базы GeoiIP
+    # Checking installed GeoiIP databases
     info_geoip
 
-    # Проверяем статус автообновления
+    # Checking the auto update status
     info_cron
 
-    # Проверяем версию XKeen
+    # Checking the XKeen version
     info_version_xkeen
 
-    # Проверяем актуальность XKeen
+    # Checking the relevance of XKeen
     info_compare_xkeen
 
-    # Проверяем версию Xray
+    # Checking the Xray version
     info_version_xray
 
-    # Проверяем версию Mihomo и Yq
+    # Checking the version of Mihomo and Yq
     info_version_mihomo
     info_version_yq
 
-    # Устанавливаем недостающие пакеты
+    # Installing missing packages
     install_packages
 }
 
 case "$1" in
 
-    -i|-install)    # Запуск полного цикла установки
+    -i|-install)    # Starting a full installation cycle
         . "$script_dir/.xkeen/import.sh"
         clear
         echo
         check_keen_mode
         if [ -n "$keen_mode" ]; then
-        echo -e "  ${red}Ошибка${reset}: Установка XKeen возможна только на Keenetic в режиме ${green}роутера${reset}"
+        echo -e "${red}Error${reset}: Installation of XKeen is only possible on Keenetic in ${green}router${reset} mode"
             exit 1
         fi
-        echo -e "  Запуск полного цикла установки ${yellow}XKeen${reset}"
+        echo -e "Running the full installation cycle ${yellow}XKeen${reset}"
 
         xkeen_info
         logs_cpu_info_console
@@ -105,7 +105,7 @@ case "$1" in
             xray_installed="installed"
 
             clear
-            # Устанавливаем GeoSite
+            # Installing GeoSite
             choice_geosite
 
             delete_geosite
@@ -114,7 +114,7 @@ case "$1" in
             sleep 2
 
             clear
-            # Устанавливаем GeoIP
+            # Installing GeoIP
             choice_geoip
 
             delete_geoip
@@ -123,7 +123,7 @@ case "$1" in
             sleep 2
 
             clear
-            # Настраиваем автоматические обновления
+            # Setting up automatic updates
             info_cron
             choice_update_cron
             update_cron_geofile_task
@@ -136,7 +136,7 @@ case "$1" in
             echo
             install_configs
 
-            # Создаем init для cron
+            # Create init for cron
             $initd_dir/S05crond stop >/dev/null 2>&1
             [ -e "$initd_dir/S05crond" ] && rm -f "$initd_dir/S05crond"
             register_cron_initd
@@ -145,7 +145,7 @@ case "$1" in
             info_version_xray
             delete_register_xray
 
-            echo -e "  Выполняется регистрация ${yellow}Xray${reset}"
+            echo -e "Registration in progress ${yellow}Xray${reset}"
             register_xray_list
             logs_register_xray_list_info_console
 
@@ -173,7 +173,7 @@ case "$1" in
             add_mihomo_config
             delete_register_mihomo
             echo
-            echo -e "  Выполняется регистрация ${yellow}Mihomo${reset}"
+            echo -e "Registration in progress ${yellow}Mihomo${reset}"
             register_mihomo_list
             logs_register_mihomo_list_info_console
             register_mihomo_control
@@ -193,7 +193,7 @@ case "$1" in
             delete_register_xkeen
             clear
             echo
-            echo -e "  Выполняется регистрация ${yellow}XKeen${reset}"
+            echo -e "Registration in progress ${yellow}XKeen${reset}"
             register_xkeen_list
             logs_register_xkeen_list_info_console
 
@@ -226,7 +226,7 @@ case "$1" in
             fi
         fi
 
-        # Удаляем временные файлы
+        # Deleting temporary files
         delete_tmp
         rm -f "$install_dir/xray_bak" "$install_dir/mihomo_bak"
         rm -rf "$xtmp_dir" "$mtmp_dir"
@@ -236,22 +236,22 @@ case "$1" in
         echo
 
         if [ "$xray_installed" != "installed" ] && [ "$mihomo_installed" != "installed" ]; then
-            echo -e "  ${red}Невозможно установить${reset} XKeen без ядра проксирования"
+            echo -e "${red}Cannot install ${reset} XKeen without proxy kernel"
             exit 1
         else
-            echo -e "  ${green}Установка XKeen выполнена!${reset}"
+            echo -e "${green}XKeen installation completed!${reset}"
         fi
         echo
 
         if [ "$xray_installed" = "installed" ] || [ "$mihomo_installed" = "installed" ]; then
             if grep -q 'name_client="xray"' $initd_dir/S99xkeen; then
-                echo -e "  1. Настройте конфигурацию Xray по пути '${yellow}$install_conf_dir/${reset}'"
-                echo -e "  2. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+                echo -e "1. Set up Xray configuration along the path'${yellow}$install_conf_dir/${reset}'"
+                echo -e "2. Start XKeen with the command ${yellow}xkeen -start${reset}"
                 echo -e "  3. ${green}Enjoy!${reset}"
                 echo
             elif grep -q 'name_client="mihomo"' $initd_dir/S99xkeen; then
-                echo -e "  1. Настройте конфигурацию Mihomo в файле '${yellow}$mihomo_conf_dir/config.yaml${reset}'"
-                echo -e "  2. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+                echo -e "1. Set up Mihomo configuration in the file'${yellow}$mihomo_conf_dir/config.yaml${reset}'"
+                echo -e "2. Start XKeen with the command ${yellow}xkeen -start${reset}"
                 echo -e "  3. ${green}Enjoy!${reset}"
                 echo
             fi
@@ -259,36 +259,36 @@ case "$1" in
 
         if [ "$xray_installed" = "installed" ] && [ "$mihomo_installed" = "installed" ]; then
             if grep -q 'name_client="xray"' $initd_dir/S99xkeen; then
-                echo -e "  Если хотите переключить XKeen на ядро ${yellow}Mihomo${reset}"
+                echo -e "If you want to switch XKeen to the kernel ${yellow}Mihomo${reset}"
                 echo
-                echo -e "  1. Настройте конфигурацию Mihomo в файле '${yellow}$mihomo_conf_dir/config.yaml${reset}'"
-                echo -e "  2. Переключите ядро проксирования командой ${yellow}xkeen -mihomo${reset}"
-                echo -e "  3. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+                echo -e "1. Set up Mihomo configuration in the file'${yellow}$mihomo_conf_dir/config.yaml${reset}'"
+                echo -e "2. Switch the proxy kernel with the command ${yellow}xkeen -mihomo${reset}"
+                echo -e "3. Start XKeen with the command ${yellow}xkeen -start${reset}"
                 echo -e "  4. ${green}Enjoy!${reset}"
             elif grep -q 'name_client="mihomo"' $initd_dir/S99xkeen; then
-                echo -e "  Если хотите переключить XKeen на ядро ${yellow}Xray${reset}"
+                echo -e "If you want to switch XKeen to the kernel ${yellow}Xray${reset}"
                 echo
-                echo -e "  1. Настройте конфигурацию Xray по пути '${yellow}$install_conf_dir/${reset}'"
-                echo -e "  2. Переключите ядро проксирования командой ${yellow}xkeen -xray${reset}"
-                echo -e "  3. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+                echo -e "1. Set up Xray configuration along the path'${yellow}$install_conf_dir/${reset}'"
+                echo -e "2. Switch the proxy kernel with the command ${yellow}xkeen -xray${reset}"
+                echo -e "3. Start XKeen with the command ${yellow}xkeen -start${reset}"
                 echo -e "  4. ${green}Enjoy!${reset}"
             fi
         echo
         fi
 
-        echo -e "  Для вывода Справки выполните ${yellow}xkeen -h${reset}"
+        echo -e "To display Help, run ${yellow}xkeen -h${reset}"
     ;;
 
 
-    -io)    # Установка XKeen OffLine
+    -io)    # Installation of XKeen OffLine
         clear
         echo
         check_keen_mode
         if [ -n "$keen_mode" ]; then
-        echo -e "  ${red}Ошибка${reset}: Установка XKeen возможна только на Keenetic в режиме ${green}роутера${reset}"
+        echo -e "${red}Error${reset}: Installation of XKeen is only possible on Keenetic in ${green}router${reset} mode"
             exit 1
         fi
-        echo "  Установка XKeen OffLine"
+        echo "Installation of XKeen OffLine"
 
         info_cpu
         logs_cpu_info_console
@@ -303,20 +303,20 @@ case "$1" in
             if [ -f "$install_dir/yq" ]; then
                 chmod +x $install_dir/yq
             else
-                echo -e "  ${red}Не найден${reset} парсер конфигурационных файлов Mihomo - Yq"
+                echo -e "${red}Not found${reset} Mihomo configuration file parser - Yq"
                 exit 1
             fi
         else
             clear
             echo
-            echo -e "  ${red}Не найдено ядро проксирования xray или mihomo${reset}"
+            echo -e "${red}Xray or mihomo proxy kernel not found${reset}"
             echo
             echo -e "  Если планируете использовать ядро xray, поместите бинарник ${yellow}xray${reset}\n  архитектуры ${green}$architecture${reset} в директорию /opt/sbin/ и начните установку снова"
-            echo -e "  Страница загрузок xray: ${yellow}https://github.com/XTLS/Xray-core/releases/latest${reset}"
+            echo -e "xray downloads page: ${yellow}https://github.com/XTLS/Xray-core/releases/latest${reset}"
             echo
             echo -e "  Если планируете использовать ядро mihomo, поместите бинарники ${yellow}mihomo${reset} и ${yellow}yq${reset}\n  архитектуры ${green}$architecture${reset} в директорию /opt/sbin/ и начните установку снова"
-            echo -e "  Страница загрузок mihomo: ${yellow}https://github.com/MetaCubeX/mihomo/releases/latest${reset}"
-            echo -e "  Страница загрузок yq: ${yellow}https://github.com/mikefarah/yq/releases/latest${reset}"
+            echo -e "mihomo download page: ${yellow}https://github.com/MetaCubeX/mihomo/releases/latest${reset}"
+            echo -e "Yq downloads page: ${yellow}https://github.com/mikefarah/yq/releases/latest${reset}"
             echo
             exit 1
         fi
@@ -331,7 +331,7 @@ case "$1" in
             clear
             delete_register_xray
             echo
-            echo -e "  Выполняется регистрация ${yellow}Xray${reset}"
+            echo -e "Registration in progress ${yellow}Xray${reset}"
             register_xray_list
             logs_register_xray_list_info_console
 
@@ -350,7 +350,7 @@ case "$1" in
             add_mihomo_config
             delete_register_mihomo
             echo
-            echo -e "  Выполняется регистрация ${yellow}Mihomo${reset}"
+            echo -e "Registration in progress ${yellow}Mihomo${reset}"
             register_mihomo_list
             logs_register_mihomo_list_info_console
             register_mihomo_control
@@ -369,7 +369,7 @@ case "$1" in
         clear
         delete_register_xkeen
         echo
-        echo -e "  Выполняется регистрация ${yellow}XKeen${reset}"
+        echo -e "Registration in progress ${yellow}XKeen${reset}"
         register_xkeen_list
         logs_register_xkeen_list_info_console
 
@@ -388,33 +388,33 @@ case "$1" in
         choice_autostart_xkeen
         add_chmod_init
 
-        # Удаляем временные файлы
+        # Deleting temporary files
         delete_tmp
         sleep 2
 
         clear
         echo
-        echo -e "  ${green}Установка XKeen выполнена!${reset}"
+        echo -e "${green}XKeen installation completed!${reset}"
         echo
-        echo -e "  Для использования ядра '${yellow}$Xray${reset}'"
-        echo -e "  1. Поместите необходимые геофайлы в директорию '${yellow}$geo_dir/${reset}'"
-        echo -e "  2. Настройте конфигурацию Xray по пути '${yellow}$install_conf_dir/${reset}'"
-        echo -e "  3. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+        echo -e "To use the kernel'${yellow}$Xray${reset}'"
+        echo -e "1. Place the necessary geofiles in the directory'${yellow}$geo_dir/${reset}'"
+        echo -e "2. Set up Xray configuration along the path'${yellow}$install_conf_dir/${reset}'"
+        echo -e "3. Start XKeen with the command ${yellow}xkeen -start${reset}"
         echo -e "  4. ${green}Enjoy!${reset}"
         echo
-        echo -e "  Для использования ядра ${yellow}Mihomo${reset}"
-        echo -e "  1. Настройте конфигурацию Mihomo в файле '${yellow}$mihomo_conf_dir/config.yaml${reset}'"
-        echo -e "  2. Переключите ядро проксирования командой ${yellow}xkeen -mihomo${reset}"
-        echo -e "  3. Запустите XKeen командой ${yellow}xkeen -start${reset}"
+        echo -e "To use the kernel ${yellow}Mihomo${reset}"
+        echo -e "1. Set up Mihomo configuration in the file'${yellow}$mihomo_conf_dir/config.yaml${reset}'"
+        echo -e "2. Switch the proxy kernel with the command ${yellow}xkeen -mihomo${reset}"
+        echo -e "3. Start XKeen with the command ${yellow}xkeen -start${reset}"
         echo -e "  4. ${green}Enjoy!${reset}"
         echo
-        echo -e "  Для вывода Справки выполните ${yellow}xkeen -h${reset}"
+        echo -e "To display Help, run ${yellow}xkeen -h${reset}"
     ;;
 
 
-    -ug)    # Запуск обновления баз GeoFile
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
-        echo "  Обновление установленных баз GeoFile"
+    -ug)    # Start updating GeoFile databases
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
+        echo "Updating installed GeoFile databases"
 
         info_geosite
         info_geoip
@@ -433,27 +433,27 @@ case "$1" in
                 $initd_dir/S99xkeen restart on >/dev/null 2>&1
             fi
 
-            echo -e "  Обновление установленных баз GeoFile ${green}выполнено${reset}"
+            echo -e "Update of installed GeoFile databases ${green}completed${reset}"
         else
-            echo -e "  ${red}Не обнаружены${reset} базы GeoFile для обновления"
+            echo -e "${red}Not found ${reset} GeoFile database for update"
         fi
     ;;
 
 
-    -uk)    # Обновление XKeen (автовыбор Stable/Dev версии)
+    -uk)    # XKeen update (auto-select Stable/Dev version)
         clear
         echo
-        echo "  Проверка обновлений XKeen"
+        echo "Checking for XKeen updates"
         xkeen_info
 
         if [ "$xkeen_build" != "Stable" ]; then
             download_func="download_xkeen_dev"
         else
             if [ "$info_compare_xkeen" = "actual" ]; then
-                echo "  Нет доступных обновлений XKeen"
+                echo "No XKeen updates available"
                 exit 0
             else
-                echo -e "  Найдена новая версия ${yellow}XKeen${reset}"
+                echo -e "Found new version of ${yellow}XKeen${reset}"
                 download_func="download_xkeen"
             fi
         fi
@@ -462,17 +462,17 @@ case "$1" in
         $download_func
         install_xkeen
 
-        # Перезапуск скрипта
+        # Restarting the script
         if grep -E "^\s*-uk_post_update\s*\)" "$0" > /dev/null; then
             exec sh "$0" -uk_post_update
         else
             . "$script_dir/.xkeen/import.sh"
 
-            echo -e "  Выполняется отмена регистрации предыдущей версии ${yellow}XKeen${reset}"
+            echo -e "Unregistering previous version ${yellow}XKeen${reset}"
             delete_register_xkeen
             logs_delete_register_xkeen_info_console
 
-            echo -e "  Выполняется регистрация новой версии ${yellow}XKeen${reset}"
+            echo -e "Registering a new version of ${yellow}XKeen${reset}"
             register_xkeen_list
             logs_register_xkeen_list_info_console
 
@@ -495,7 +495,7 @@ case "$1" in
                 $initd_dir/S99xkeen restart on >/dev/null 2>&1
             fi
 
-            echo -e "  Обновление XKeen ${green}выполнено${reset}"
+            echo -e "XKeen update ${green}done${reset}"
         fi
     ;;
 
@@ -503,11 +503,11 @@ case "$1" in
     -uk_post_update)
         . "$script_dir/.xkeen/import.sh"
 
-        echo -e "  Выполняется отмена регистрации предыдущей версии ${yellow}XKeen${reset}"
+        echo -e "Unregistering previous version ${yellow}XKeen${reset}"
         delete_register_xkeen
         logs_delete_register_xkeen_info_console
 
-        echo -e "  Выполняется регистрация новой версии ${yellow}XKeen${reset}"
+        echo -e "Registering a new version of ${yellow}XKeen${reset}"
         register_xkeen_list
         logs_register_xkeen_list_info_console
 
@@ -530,11 +530,11 @@ case "$1" in
             $initd_dir/S99xkeen restart on >/dev/null 2>&1
         fi
 
-        echo -e "  Обновление XKeen ${green}выполнено${reset}"
+        echo -e "XKeen update ${green}done${reset}"
     ;;
 
 
-    -ux)    # Обновление или установка ядра Xray
+    -ux)    # Updating or installing the Xray kernel
         . "/opt/sbin/.xkeen/01_info/03_info_cpu.sh"
         status_file="/opt/lib/opkg/status"
         info_cpu
@@ -544,17 +544,17 @@ case "$1" in
         clear
         echo
 
-        [ "$xray_installed" = "installed" ] && echo -e "  В роутере установлен Xray версии ${yellow}$xray_current_version${reset}" && echo
+        [ "$xray_installed" = "installed" ] && echo -e "Xray version ${yellow}$xray_current_version${reset} is installed in the router" && echo
         download_xray
 
         if [ -z $bypass_xray ]; then
             install_xray
 
-            echo -e "  Выполняется отмена регистрации предыдущей версии ${yellow}Xray${reset}"
+            echo -e "Unregistering previous version ${yellow}Xray${reset}"
             delete_register_xray
             logs_delete_register_xray_info_console
 
-            echo -e "  Выполняется регистрация новой версии ${yellow}Xray${reset}"
+            echo -e "Registering a new version of ${yellow}Xray${reset}"
             register_xray_list
             logs_register_xray_list_info_console
 
@@ -570,7 +570,7 @@ case "$1" in
             fi
 
             echo
-            echo -e "  Обновление ядра Xray ${green}выполнено${reset}"
+            echo -e "Xray core update ${green}done${reset}"
         fi
 
         rm -f "$install_dir/xray_bak"
@@ -579,7 +579,7 @@ case "$1" in
     ;;
 
 
-    -um)    # Обновление или установка ядра Mihomo
+    -um)    # Updating or installing the Mihomo kernel
         . "/opt/sbin/.xkeen/01_info/03_info_cpu.sh"
         status_file="/opt/lib/opkg/status"
         info_cpu
@@ -589,7 +589,7 @@ case "$1" in
         clear
         echo
 
-        [ "$mihomo_installed" = "installed" ] && echo -e "  В роутере установлен Mihomo версии ${yellow}$mihomo_current_version${reset}" && echo
+        [ "$mihomo_installed" = "installed" ] && echo -e "Mihomo version ${yellow}$mihomo_current_version${reset} is installed in the router" && echo
         download_mihomo
         info_version_mihomo
         info_version_yq
@@ -602,7 +602,7 @@ case "$1" in
                     $initd_dir/S99xkeen restart on >/dev/null 2>&1
                 fi
                 echo
-                echo -e "  Обновление ядра ${yellow}Mihomo${reset} ${green}выполнено${reset}"
+                echo -e "Kernel update ${yellow}Mihomo${reset} ${green}done${reset}"
             else
                 mihomo_installed="installed"
                 info_version_mihomo
@@ -610,7 +610,7 @@ case "$1" in
                 add_mihomo_config
                 delete_register_mihomo
                 echo
-                echo -e "  Выполняется регистрация ${yellow}Mihomo${reset}"
+                echo -e "Registration in progress ${yellow}Mihomo${reset}"
                 register_mihomo_list
                 logs_register_mihomo_list_info_console
                 register_mihomo_control
@@ -626,7 +626,7 @@ case "$1" in
                 sleep 2
                 clear
                 echo
-                echo -e "  Установка ядра ${yellow}Mihomo${reset} ${green}выполнена${reset}"
+                echo -e "Kernel installation ${yellow}Mihomo${reset} ${green}completed${reset}"
             fi
         fi
 
@@ -636,91 +636,91 @@ case "$1" in
     ;;
 
 
-    -ugc)    # Создать или изменить существующюю задачу автообновления баз GeoFile
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
+    -ugc)    # Create or modify an existing GeoFile database auto-update task
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
         info_cron
         clear
-        echo -e "  Создание или изменение задачи автообновления баз ${yellow}GeoFile${reset}"
+        echo -e "Creating or changing the database auto-update task ${yellow}GeoFile${reset}"
         choice_update_cron
         update_cron_geofile_task
         choice_cron_time
         install_cron
         delete_tmp
-        echo -e "  Создание или изменение задачи автообновления баз GeoFile ${green}выполнено${reset}"
+        echo -e "Creation or modification of the GeoFile database auto-update task ${green}completed${reset}"
     ;;
 
 
-    -ri)    # Создать файл автозапуска XKeen
+    -ri)    # Create XKeen startup file
         clear
         $initd_dir/S99xkeen stop >/dev/null 2>&1
         [ -e "$initd_dir/S99xkeen" ] && rm -f "$initd_dir/S99xkeen"
 
-        echo -e "  Создание файла автозапуска ${yellow}XKeen${reset}"
+        echo -e "Creating an autorun file ${yellow}XKeen${reset}"
         sleep 1
 
         register_xkeen_initd
         logs_register_xkeen_initd_info_console
 
         echo
-        echo -e "  Создание файла автозапуска XKeen ${green}выполнено${reset}"
-        echo -e "  Если конфигурация настроена, то можете запустить проксирование командой '${yellow}xkeen -start${reset}'"
+        echo -e "XKeen autorun file creation ${green}completed${reset}"
+        echo -e "If the configuration is configured, you can start proxying with the command'${yellow}xkeen -start${reset}'"
     ;;
 
 
-    -dgc)    # Удалить задачу автообновления баз GeoFile
+    -dgc)    # Delete the GeoFile database auto-update task
         clear
         echo
-        choice_for_remove="задачу автообновления баз GeoFile"
+        choice_for_remove="GeoFile database auto-update task"
         choice_remove
 
         info_cron
 
         clear
         echo
-        echo -e "  Удаление задачи автообновления баз ${yellow}GeoFile${reset}"
+        echo -e "Deleting the database auto-update task ${yellow}GeoFile${reset}"
 
         delete_cron_geofile
         logs_delete_cron_geofile_info_console
         delete_tmp
 
-        echo -e "  Удаление задачи автообновления баз GeoFile ${green}выполнено${reset}"
+        echo -e "Deleting the GeoFile database auto-update task ${green}completed${reset}"
     ;;
 
 
-    -dx)    # Удалить Xray
+    -dx)    # Remove Xray
         clear
         echo
         choice_for_remove="Xray"
         choice_remove
         clear
         echo
-        command -v xray >/dev/null 2>&1 || { echo -e "  Xray ${red}не установлен${reset}"; exit 1; }
-        echo -e "  Удаление ${yellow}Xray${reset}"
+        command -v xray >/dev/null 2>&1 || { echo -e "Xray ${red}not installed${reset}"; exit 1; }
+        echo -e "Removing ${yellow}Xray${reset}"
 
         $initd_dir/S99xkeen stop >/dev/null 2>&1
         opkg remove xray_s
         rm -f "$install_dir/xray"
 
         echo
-        echo -e "  Удаление ${yellow}конфигурационных файлов Xray${reset}"
+        echo -e "Removing ${yellow}Xray configuration files${reset}"
 
         delete_configs
         logs_delete_configs_info_console
 
         echo
-        echo -e "  Удаление Xray ${green}выполнено${reset}"
+        echo -e "Xray deletion ${green}done${reset}"
     ;;
 
 
-    -dm)    # Удалить Mihomo
+    -dm)    # Remove Mihomo
         clear
         echo
         choice_for_remove="Mihomo"
         choice_remove
         clear
         echo
-        command -v mihomo >/dev/null 2>&1 || { echo -e "  Mihomo ${red}не установлен${reset}"; exit 1; }
-        echo -e "  Удаление ${yellow}Mihomo${reset}"
+        command -v mihomo >/dev/null 2>&1 || { echo -e "Mihomo ${red}not installed${reset}"; exit 1; }
+        echo -e "Removing ${yellow}Mihomo${reset}"
 
         $initd_dir/S99xkeen stop >/dev/null 2>&1
         opkg remove mihomo_s
@@ -729,11 +729,11 @@ case "$1" in
         rm -rf "$mihomo_conf_dir"
 
         echo
-        echo -e "  Удаление Mihomo ${green}выполнено${reset}"
+        echo -e "Mihomo ${green}removal completed${reset}"
     ;;
 
 
-    -dk)    # Удалить XKeen
+    -dk)    # Remove XKeen
         clear
         echo
         choice_for_remove="XKeen"
@@ -741,7 +741,7 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Удаление ${yellow}XKeen${reset}"
+        echo -e "Removing ${yellow}XKeen${reset}"
         opkg remove xkeen
         delete_tmp
 
@@ -751,9 +751,9 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Удаление XKeen ${green}выполнено${reset}"
+        echo -e "XKeen ${green} uninstall completed${reset}"
         echo
-        echo -e "  Установить ${yellow}XKeen${reset} заново можно командами:"
+        echo -e "You can reinstall ${yellow}XKeen${reset} with the commands:"
         echo
         echo -e "  ${green}curl -OL https://raw.githubusercontent.com/jameszeroX/XKeen/main/install.sh${reset}"
         echo -e "  ${green}chmod +x install.sh${reset}"
@@ -761,7 +761,7 @@ case "$1" in
     ;;
 
 
-    -dgi)    # Удалить GeoIP's
+    -dgi)    # Remove GeoIP's
         clear
         echo
         choice_for_remove="GeoIP's"
@@ -769,17 +769,17 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Удаление всех баз ${yellow}GeoIP${reset}"
+        echo -e "Removing all databases ${yellow}GeoIP${reset}"
 
         delete_geoip_key
         logs_delete_geoip_info_console
 
         echo
-        echo -e "  Удаление всех баз GeoIP ${green}выполнено${reset}"
+        echo -e "Deleting all GeoIP databases ${green}done${reset}"
     ;;
 
 
-    -dgs)    # Удалить GeoSite's
+    -dgs)    # Remove GeoSite's
         clear
         echo
         choice_for_remove="GeoSite's"
@@ -787,122 +787,122 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Удаление всех баз ${yellow}GeoSite${reset}"
+        echo -e "Removing all databases ${yellow}GeoSite${reset}"
 
         delete_geosite_key
         logs_delete_geosite_info_console
 
         echo
-        echo -e "  Удаление всех баз GeoSite ${green}выполнено${reset}"
+        echo -e "Removal of all GeoSite databases ${green}done${reset}"
     ;;
 
 
-    -drx)    # Удалить регистрацию Xray
+    -drx)    # Remove Xray registration
         clear
         echo
-        choice_for_remove="регистрацию Xray"
+        choice_for_remove="Xray registration"
         choice_remove
 
         clear
         echo
-        echo -e "  Удаление ${yellow}регистрации Xray${reset}"
+        echo -e "Removing ${yellow}Xray registration${reset}"
 
         delete_register_xray
         logs_delete_register_xray_info_console
 
-        echo -e "  Удаление регистрации Xray ${green}выполнено${reset}"
+        echo -e "Xray registration deletion ${green}done${reset}"
     ;;
 
 
-    -drm)    # Удалить регистрацию Mihomo
+    -drm)    # Delete Mihomo registration
         clear
         echo
-        choice_for_remove="регистрацию Mihomo"
+        choice_for_remove="Mihomo registration"
         choice_remove
 
         clear
         echo
-        echo -e "  Удаление ${yellow}регистрации Mihomo${reset}"
+        echo -e "Deleting ${yellow}Mihomo${reset} registration"
 
         delete_register_mihomo
         logs_delete_register_mihomo_info_console
 
-        echo -e "  Удаление регистрации Mihomo ${green}выполнено${reset}"
+        echo -e "Deleting Mihomo registration ${green}done${reset}"
     ;;
 
 
-    -drk)    # Удалить регистрацию XKeen
+    -drk)    # Delete XKeen registration
         clear
         echo
-        choice_for_remove="регистрацию XKeen"
+        choice_for_remove="XKeen registration"
         choice_remove
 
         clear
         echo
-        echo -e "  Удаление ${yellow}регистрации XKeen${reset}"
+        echo -e "Removing ${yellow}XKeen${reset} registration"
 
         delete_register_xkeen
         logs_delete_register_xkeen_info_console
 
-        echo -e "  Удаление регистрации XKeen ${green}выполнено${reset}"
+        echo -e "XKeen registration deletion ${green}done${reset}"
     ;;
 
 
-    -remove)    # Полная деинсталляция XKeen и всех зависимостей
+    -remove)    # Complete uninstallation of XKeen and all dependencies
         clear
         echo
-        choice_for_remove="XKeen полностью со всеми зависимостями"
+        choice_for_remove="XKeen completely with all dependencies"
         choice_remove
 
         info_cron
         clear
         echo
-        echo -e "  Удаление задачи автообновления баз ${yellow}GeoFile${reset}"
+        echo -e "Deleting the database auto-update task ${yellow}GeoFile${reset}"
         delete_cron_geofile
         logs_delete_cron_geofile_info_console
 
         echo
-        echo -e "  Удаление задачи автообновления баз GeoFile ${green}выполнено${reset}"
+        echo -e "Deleting the GeoFile database auto-update task ${green}completed${reset}"
         sleep 2
 
-        # Удаление GeoIP's
+        # Removing GeoIP's
         clear
         echo
-        echo -e "  Удаление всех баз ${yellow}GeoIP${reset}"
+        echo -e "Removing all databases ${yellow}GeoIP${reset}"
 
         delete_geoip_key
         logs_delete_geoip_info_console
 
-        echo -e "  Удаление всех баз GeoIP ${green}выполнено${reset}"
+        echo -e "Deleting all GeoIP databases ${green}done${reset}"
         sleep 2
 
-        # Удаление GeoSite's
+        # Removing GeoSite's
         clear
         echo
-        echo -e "  Удаление всех баз ${yellow}GeoSite${reset}"
+        echo -e "Removing all databases ${yellow}GeoSite${reset}"
 
         delete_geosite_key
         logs_delete_geosite_info_console
 
-        echo -e "  Удаление всех баз GeoSite ${green}выполнено${reset}"
+        echo -e "Removal of all GeoSite databases ${green}done${reset}"
         sleep 2
 
-        # Удаление файлов конфигурации Xray
+        # Removing Xray configuration files
         clear
         echo
-        echo -e "  Удаление ${yellow}конфигурационных файлов Xray${reset}"
+        echo -e "Removing ${yellow}Xray configuration files${reset}"
 
         delete_configs
         logs_delete_configs_info_console
 
         echo
-        echo -e "  Удаление конфигурационных файлов Xray ${green}выполнено${reset}"
+        echo -e "Removing Xray configuration files ${green}done${reset}"
         sleep 2
 
-        # Удаление Xray
+        # Removing Xray
         clear
         echo
-        echo -e "  ${yellow}Удаление${reset} Xray"
+        echo -e "${yellow}Delete${reset} Xray"
 
         $initd_dir/S99xkeen stop >/dev/null 2>&1
         opkg remove xray_s
@@ -910,26 +910,26 @@ case "$1" in
         rm -rf "/opt/etc/xray"
 
         echo
-        echo -e "  Удаление Xray ${green}выполнено${reset}"
+        echo -e "Xray deletion ${green}done${reset}"
         sleep 2
 
-        # Удаление Mihomo
+        # Removing Mihomo
         clear
         echo
-        echo -e "  ${yellow}Удаление${reset} Mihomo"
+        echo -e "${yellow}Delete${reset} Mihomo"
         opkg remove mihomo_s
         opkg remove yq_s
         rm -f "$install_dir/mihomo" "$install_dir/yq"
         rm -rf "$mihomo_conf_dir"
 
         echo
-        echo -e "  Удаление Mihomo ${green}выполнено${reset}"
+        echo -e "Mihomo ${green}removal completed${reset}"
         sleep 2
 
-        # Удаление XKeen
+        # Removing XKeen
         clear
         echo
-        echo -e "  Удаление ${yellow}XKeen${reset}"
+        echo -e "Removing ${yellow}XKeen${reset}"
         opkg remove xkeen
         delete_tmp
 
@@ -939,9 +939,9 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Полная деинсталляция ${yellow}XKeen${reset} и всех зависимостей ${green}выполнена${reset}"
+        echo -e "Complete uninstallation of ${yellow}XKeen${reset} and all ${green} dependencies completed${reset}"
         echo
-        echo -e "  Установить ${yellow}XKeen${reset} заново можно командами:"
+        echo -e "You can reinstall ${yellow}XKeen${reset} with the commands:"
         echo
         echo -e "  ${green}curl -OL https://raw.githubusercontent.com/jameszeroX/XKeen/main/install.sh${reset}"
         echo -e "  ${green}chmod +x install.sh${reset}"
@@ -949,9 +949,9 @@ case "$1" in
     ;;
 
 
-    -rrk)    # Обновить регистрацию XKeen
+    -rrk)    # Update XKeen registration
         clear
-        echo -e "  Обновление регистрации ${yellow}XKeen${reset}"
+        echo -e "Registration update ${yellow}XKeen${reset}"
 
         info_cpu
         info_version_xkeen
@@ -969,14 +969,14 @@ case "$1" in
         logs_register_xkeen_status_info_console
 
         echo
-        echo -e "  Обновление регистрации XKeen в системе ${green}выполнено${reset}"
+        echo -e "XKeen registration update in system ${green}completed${reset}"
     ;;
 
 
-    -rrx)    # Обновить регистрацию Xray
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
+    -rrx)    # Update Xray registration
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
         clear
-        echo -e "  Обновление регистрации ${yellow}Xray${reset}"
+        echo -e "Registration update ${yellow}Xray${reset}"
 
         info_xray
         info_cpu
@@ -995,14 +995,14 @@ case "$1" in
         logs_register_xray_status_info_console
 
         echo
-        echo -e "  Обновление регистрации Xray в системе ${green}выполнено${reset}"
+        echo -e "Xray registration update ${green}completed${reset}"
     ;;
 
 
-    -rrm)    # Обновить регистрацию Mihomo
-        command -v mihomo >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Mihomo"; exit 1; }
+    -rrm)    # Update Mihomo registration
+        command -v mihomo >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Mihomo proxy kernel"; exit 1; }
         clear
-        echo -e "  Обновление регистрации ${yellow}Mihomo${reset}"
+        echo -e "Registration update ${yellow}Mihomo${reset}"
 
         info_mihomo
         info_cpu
@@ -1031,18 +1031,18 @@ case "$1" in
         logs_register_yq_status_info_console
 
         echo
-        echo -e "  Обновление регистрации Mihomo в системе ${green}выполнено${reset}"
+        echo -e "Mihomo registration update in ${green}system completed${reset}"
     ;;
 
 
-    -k)    # Переустановка XKeen
+    -k)    # Reinstalling XKeen
         . "/opt/sbin/.xkeen/01_info/03_info_cpu.sh"
         status_file="/opt/lib/opkg/status"
         info_cpu
         xkeen_info
 
         clear
-        echo -e "  Переустановка ${yellow}XKeen${reset}"
+        echo -e "Reinstalling ${yellow}XKeen${reset}"
 
         choice_redownload_xkeen
         if [ -n "$redownload_xkeen" ]; then
@@ -1057,16 +1057,16 @@ case "$1" in
         echo
         install_xkeen
 
-        # Перезапуск скриптa
+        # Restarting the script
         if grep -E "^\s*-k_post_install\s*\)" "$0" > /dev/null; then
             exec sh "$0" -k_post_install
         else
             . "$script_dir/.xkeen/import.sh"
-            echo -e "  Выполняется отмена регистрации предыдущей версии ${yellow}XKeen${reset}"
+            echo -e "Unregistering previous version ${yellow}XKeen${reset}"
             delete_register_xkeen
             logs_delete_register_xkeen_info_console
 
-            echo -e "  Выполняется регистрация новой версии ${yellow}XKeen${reset}"
+            echo -e "Registering a new version of ${yellow}XKeen${reset}"
             register_xkeen_list
             logs_register_xkeen_list_info_console
 
@@ -1090,18 +1090,18 @@ case "$1" in
             fi
 
             echo
-            echo -e "  Переустановка XKeen ${green}выполнена${reset}"
+            echo -e "Reinstallation of XKeen ${green}completed${reset}"
         fi
     ;;
 
 
     -k_post_install)
         . "$script_dir/.xkeen/import.sh"
-        echo -e "  Выполняется отмена регистрации предыдущей версии ${yellow}XKeen${reset}"
+        echo -e "Unregistering previous version ${yellow}XKeen${reset}"
         delete_register_xkeen
         logs_delete_register_xkeen_info_console
 
-        echo -e "  Выполняется регистрация новой версии ${yellow}XKeen${reset}"
+        echo -e "Registering a new version of ${yellow}XKeen${reset}"
         register_xkeen_list
         logs_register_xkeen_list_info_console
 
@@ -1125,12 +1125,12 @@ case "$1" in
         fi
 
         echo
-        echo -e "  Переустановка XKeen ${green}выполнена${reset}"
+        echo -e "Reinstallation of XKeen ${green}completed${reset}"
     ;;
 
 
-    -g)    # Переустановка баз GeoFile
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
+    -g)    # Reinstalling GeoFile databases
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
         clear
         info_geosite
         info_geoip
@@ -1148,146 +1148,146 @@ case "$1" in
 
         clear
         echo
-        echo -e "  Переустановка баз GeoFile ${green}выполнена${reset}"
+        echo -e "Reinstallation of GeoFile databases ${green}completed${reset}"
     ;;
 
 
-    -kb)    # Резервное копирование XKeen
-        echo -e "  Создание резервной копии ${yellow}XKeen${reset}"
+    -kb)    # Backup XKeen
+        echo -e "Creating a backup ${yellow}XKeen${reset}"
         info_version_xkeen
         backup_xkeen
     ;;
 
 
-    -kbr)    # Восстановление XKeen из резервной копии
-        echo -e "  Восстановление ${yellow}XKeen${reset} из резервной копии"
+    -kbr)    # Restoring XKeen from a backup
+        echo -e "Restoring ${yellow}XKeen${reset} from a backup"
         restore_backup_xkeen
     ;;
 
 
-    -cb)    # Резервное копирование конфигурации Xray
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
-        echo -e "  Создание резервной копии ${yellow}конфигурации Xray${reset}"
+    -cb)    # Backup Xray Configuration
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
+        echo -e "Backing up ${yellow}Xray configuration ${reset}"
         backup_configs_xray
     ;;
 
 
-    -cbr)    # Восстановление конфигурации Xray из резервной копии
-        command -v xray >/dev/null 2>&1 || { echo -e "  ${red}Не обнаружено${reset} ядро проксирования Xray"; exit 1; }
-        echo -e "  Восстановление ${yellow}конфигурации Xray${reset} из резервной копии"
+    -cbr)    # Restoring an Xray configuration from a backup
+        command -v xray >/dev/null 2>&1 || { echo -e "${red}Not detected${reset} Xray proxy kernel"; exit 1; }
+        echo -e "Restoring ${yellow}Xray${reset} configuration from backup"
         restore_backup_configs_xray
     ;;
 
 
-    -mb)    # Резервное копирование конфигурации Mihomo
-        echo -e "  Создание резервной копии ${yellow}конфигурации Mihomo${reset}"
+    -mb)    # Mihomo Configuration Backup
+        echo -e "Backing up ${yellow}Mihomo${reset} configuration"
         backup_configs_mihomo
     ;;
 
 
-    -mbr)    # Восстановление конфигурации Mihomo из резервной копии
-        echo -e "  Восстановление ${yellow}конфигурации Mihomo${reset} из резервной копии"
+    -mbr)    # Restoring Mihomo configuration from a backup
+        echo -e "Restoring ${yellow}Mihomo${reset} configuration from backup"
         restore_backup_configs_mihomo
     ;;
 
 
-    -tc)    # Тест соединения
-        echo "  Проверка интернет-соединения"
+    -tc)    # Connection test
+        echo "Checking your Internet connection"
         tests_connection
-        echo -e "  Проверка интернет-соединения ${green}выполнена${reset}"
+        echo -e "Internet connection check ${green}completed${reset}"
     ;;
 
 
-    -tpx)    # Показать прослушиваемые порты
-        echo "  Определение прослушиваемых портов"
+    -tpx)    # Show listening ports
+        echo "Defining listening ports"
         tests_ports_client
     ;;
 
 
-    -tfk)    # Проверить файлы XKeen
-        echo -e "  Проверка файлов ${yellow}XKeen${reset}"
-        echo -e "  Проверка файлов XKeen ${green}выполнена${reset}"
+    -tfk)    # Check XKeen files
+        echo -e "Checking files ${yellow}XKeen${reset}"
+        echo -e "XKeen files check ${green}completed${reset}"
     ;;
 
 
-    -tfx)    # Проверить файлы Xray
-        echo -e "  Проверка файлов ${yellow}Xray${reset}"
-        echo -e "  Проверка файлов Xray ${green}выполнена${reset}"
+    -tfx)    # Check Xray files
+        echo -e "Checking files ${yellow}Xray${reset}"
+        echo -e "Xray files check ${green}completed${reset}"
     ;;
 
 
-    -v)    # Показать версию XKeen
-        echo "  Версия XKeen $xkeen_current_version $xkeen_build"
+    -v)    # Show XKeen version
+        echo "Версия XKeen $xkeen_current_version $xkeen_build"
     ;;
 
 
-    -about)    # О программе
+    -about)    # About the program
         clear
         about_xkeen
     ;;
 
 
-    -ad)    # Поддержать разработчиков
+    -ad)    # Support developers
         clear
         author_donate
     ;;
 
 
-    -af)    # Обратная связь
+    -af)    # Feedback
         clear
         author_feedback
     ;;
 
 
-    -h)    # Помощь
+    -h)    # Help
         clear
         help_xkeen
     ;;
 
 
-    -start)    # Запуск XKeen
+    -start)    # Launch of XKeen
         add_chmod_init
         $initd_dir/S99xkeen start on
         ip route flush cache
     ;;
 
 
-    -stop)    # Остановка XKeen
+    -stop)    # Stop XKeen
         add_chmod_init
         $initd_dir/S99xkeen stop
     ;;
 
 
-    -restart)    # Перезапуск XKeen
+    -restart)    # Restart XKeen
         add_chmod_init
         $initd_dir/S99xkeen restart on
     ;;
 
 
-    -status)    # Состояние XKeen
+    -status)    # XKeen status
         $initd_dir/S99xkeen status
     ;;
 
 
-    -auto)    # Смена режима запуска XKeen
+    -auto)    # Changing XKeen launch mode
         change_autostart_xkeen
         add_chmod_init
     ;;
 
 
-    -fd)    # Смена режима контроля файловых дескрипторов
+    -fd)    # Changing the file descriptor control mode
         if grep -q 'check_fd="on"' $initd_dir/S99xkeen; then
             sed -i 's/check_fd="on"/check_fd="off"/' $initd_dir/S99xkeen
-            echo -e "  Контроль файловых дескрипторов, открытых прокси-клиентом ${red}отключен${reset}. ${yellow}Перезагрузите роутер!${reset}"
+            echo -e "Control of file descriptors opened by the proxy client ${red}disabled${reset}. ${yellow}Reboot your router!${reset}"
         else
             sed -i 's/check_fd="off"/check_fd="on"/' $initd_dir/S99xkeen
-            echo -e "  Контроль файловых дескрипторов, открытых прокси-клиентом ${green}включен${reset}. ${yellow}Перезагрузите роутер!${reset}"
+            echo -e "Control of file descriptors opened by the proxy client ${green}enabled${reset}. ${yellow}Reboot your router!${reset}"
         fi
         add_chmod_init
     ;;
 
 
-    -ap)    # Добавить порт проксирования
+    -ap)    # Add proxy port
         shift
         add_ports_donor "$*"
         sleep 2
@@ -1298,7 +1298,7 @@ case "$1" in
     ;;
 
 
-    -dp)    # Удалить порт проксирования
+    -dp)    # Remove proxy port
         shift
         dell_ports_donor "$*"
         sleep 2
@@ -1309,12 +1309,12 @@ case "$1" in
     ;;
 
 
-    -cp)    # Получить список портов проксирования
+    -cp)    # Get a list of proxy ports
         get_ports_donor
     ;;
 
 
-    -ape)    # Добавить порт-исключение проксирования
+    -ape)    # Add proxy exception port
         shift
         add_ports_exclude "$*" 
         sleep 2
@@ -1325,7 +1325,7 @@ case "$1" in
     ;;
 
 
-    -dpe)    # Удалить порт-исключение проксирования
+    -dpe)    # Remove proxy exclusion port
         shift
         dell_ports_exclude "$*"
         sleep 2
@@ -1336,19 +1336,19 @@ case "$1" in
     ;;
 
 
-    -cpe)    # Получить список портов, исключёных из проксирования
+    -cpe)    # Get a list of ports excluded from proxying
         get_ports_exclude
     ;;
 
 
-    -modules)    # Перенос необходимых модулей из прошивки в пользовательскую директорию
+    -modules)    # Transferring the necessary modules from the firmware to the user directory
         clear
         echo
         keenos_modules
         migration_modules
     ;;
 
-    -delmodules)    # Удаление модулей из пользовательской директории
+    -delmodules)    # Removing modules from a user directory
         clear
         echo
         keenos_modules
@@ -1356,7 +1356,7 @@ case "$1" in
     ;;
 
 
-    -d)    # Установка задержки автозапуска в секундах
+    -d)    # Setting the autostart delay in seconds
         shift
         delay_autostart "$1"
         sleep 2
@@ -1364,14 +1364,14 @@ case "$1" in
     ;;
 
 
-    -diag)    # Диагностика XKeen
+    -diag)    # XKeen Diagnostics
         tests_entware_storage
         clear
         diagnostic
     ;;
 
 
-    -channel)    # Смена канала обновлений XKeen (Stable/Dev)
+    -channel)    # Changing the XKeen update channel (Stable/Dev)
         clear
         choice_channel_xkeen
         change_channel_xkeen
@@ -1379,18 +1379,18 @@ case "$1" in
     ;;
 
 
-    -xray)    # Смена ядра проксирования на Xray
+    -xray)    # Changing the proxy kernel to Xray
         choice_xray_core
     ;;
 
 
-    -mihomo)    # Смена ядра проксирования на Mihomo
+    -mihomo)    # Changing the proxy kernel to Mihomo
         choice_mihomo_core
     ;;
 
 
     *)
-        echo -e "     Неизвестный ключ: ${red}$1${reset}"
-        echo -e "     Список доступных ключей: ${yellow}xkeen -h${reset}"
+        echo -e "Unknown key: ${red}$1${reset}"
+        echo -e "List of available keys: ${yellow}xkeen -h${reset}"
     ;;
 esac
