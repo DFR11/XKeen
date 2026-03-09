@@ -1,15 +1,15 @@
-# Установка необходимых пакетов
+# Installing required packages
 install_packages() {
-    # Определение переменных
+    # Defining Variables
     package_status="$1"
     package_name="$2"
 
-    # Проверка статуса пакета
+    # Check package status
     if [ "${package_status}" = "not_installed" ]; then
-        # Установка пакета
+        # Installing the package
         opkg install "${package_name}" &>/dev/null
 
-        # Проверка успешности установки
+        # Verifying installation success
        if opkg list-installed | grep -q "^${package_name}"; then
            package_status="installed_xkeen"
        fi

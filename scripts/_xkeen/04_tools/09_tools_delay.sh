@@ -19,25 +19,25 @@ delay_autostart() {
     if [ -f "$initd_file" ]; then
         target_file="$initd_file"
     else
-        echo -e "  ${red}Ошибка${reset}: Не найден файл автозапуска ${yellow}S99xkeen${reset}"
+        echo -e "${red}Error${reset}: Autorun file not found ${yellow}S99xkeen${reset}"
         return 1
     fi
 
-    # Вывод текущей задержки автозапуска
+    # Displays the current autostart delay
     if [ -z "$new_delay" ]; then
         current_delay=$(
             awk -F= '/start_delay/{print $2; exit}' "$target_file" \
             | tr -d '[:space:]'
         )
         current_delay=${current_delay:-""}
-        echo -e "  Текущая задержка автозапуска XKeen ${yellow}$current_delay секунд(ы)${reset}"
+        echo -e "Current XKeen autorun delay ${yellow}$current_delay seconds(s)${reset}"
         return 1
     fi
 
-    # Проверка, что new_delay - это число
+    # Checking that new_delay is a number
     if ! [ "$new_delay" -eq "$new_delay" ] 2>/dev/null; then
-        echo -e "  ${red}Ошибка${reset}"
-        echo "  Новая задержка должна быть числом"
+        echo -e "${red}Error${reset}"
+        echo "The new delay must be a number"
         return 1
     fi
 
@@ -48,7 +48,7 @@ delay_autostart() {
     current_delay=${current_delay:-""}
 
     if [ "$current_delay" = "$new_delay" ]; then
-        echo "  Обновление задержки автозапуска XKeen не требуется"
+        echo "XKeen autostart delay update is not required"
         return 0
     else
         tmpfile=$(mktemp)
@@ -57,7 +57,7 @@ delay_autostart() {
 
     while true; do
         if data_is_updated_exclude "$target_file" "$new_delay"; then
-            echo -e "  Установлена задержка автозапуска XKeen ${yellow}${new_delay} секунд(ы)${reset}"
+            echo -e "XKeen autorun delay set ${yellow}${new_delay} seconds(s)${reset}"
             break
         fi
     done

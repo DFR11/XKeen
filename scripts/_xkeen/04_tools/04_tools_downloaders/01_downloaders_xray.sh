@@ -1,48 +1,48 @@
-# Загрузка Xray
+# Loading Xray
 download_xray() {
     while true; do
-        printf "  ${green}Запрос информации${reset} о релизах ${yellow}Xray${reset}\n"
+        printf "${green}Request information${reset} about releases ${yellow}Xray${reset}\n"
         
-        # Получаем список релизов через GitHub API
+        # Getting a list of releases via GitHub API
         RELEASE_TAGS=$(curl --connect-timeout 10 $curl_timeout -s "${xray_api_url}?per_page=20" 2>/dev/null | jq -r '.[] | select(.prerelease == false) | .tag_name' | head -n 8)
         
         if [ -z "$RELEASE_TAGS" ]; then
             echo
-            printf "  ${red}Нет доступа${reset} к ${yellow}GitHub API${reset}. Пробуем ${yellow}jsDelivr${reset}...\n"
+            printf "${red}No access${reset} to ${yellow}GitHub API${reset}. Let's try ${yellow}jsDelivr${reset}...\n"
             
-            # Получаем список релизов через jsDelivr
+            # Getting a list of releases via jsDelivr
             RELEASE_TAGS=$(curl --connect-timeout 10 $curl_timeout -s "$xray_jsd_url" 2>/dev/null | jq -r '.versions[]' | head -n 8)
             
             if [ -z "$RELEASE_TAGS" ]; then
                 echo
-                printf "  ${red}Нет доступа${reset} к ${yellow}jsDelivr${reset}\n"
+                printf "${red}No access${reset} to ${yellow}jsDelivr${reset}\n"
                 echo
                 printf "  ${red}Ошибка${reset}: Не удалось получить список релизов ни через ${yellow}GitHub API${reset}, ни через ${yellow}jsDelivr${reset}\n  Проверьте соединение с интернетом или повторите позже\n  Если ошибка сохраняется, воспользуйтесь возможностью OffLine установки:\n  https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md\n"
                 echo
                 exit 1
             fi
             echo
-            printf "  Список релизов получен с использованием ${yellow}jsDelivr${reset}:\n"
+            printf "List of releases obtained using ${yellow}jsDelivr${reset}:\n"
             USE_JSDELIVR="true"
         else
             echo
-            printf "  Список релизов получен с использованием ${yellow}GitHub API${reset}:\n"
+            printf "List of releases retrieved using ${yellow}GitHub API${reset}:\n"
         fi
 
         echo
         echo "$RELEASE_TAGS" | awk '{printf "    %2d. %s\n", NR, $0}'
         echo
-        echo "     9. Ручной ввод версии"
+        echo "9. Manual version entry"
         echo
-        echo "     0. Пропустить загрузку Xray"
+        echo "0. Skip Xray download"
 
-        printf "\n  Введите порядковый номер релиза (0 - пропустить, 9 - ручной ввод): "
+        printf "\nEnter the release serial number (0 - skip, 9 - manual entry):"
         read -r choice
 
         case "$choice" in
             [0-9]) ;;
             *) 
-                printf "  ${red}Некорректный${reset} ввод. Пожалуйста, введите число\n"
+                printf "${red}Invalid ${reset} input. Please enter a number\n"
                 sleep 1
                 continue
                 ;;
@@ -50,15 +50,15 @@ download_xray() {
 
         if [ "$choice" = "0" ]; then
             bypass_xray="true"
-            printf "  Загрузка Xray ${yellow}пропущена${reset}\n"
+            printf "Xray loading ${yellow}skipped${reset}\n"
             return
         fi
 
         if [ "$choice" = "9" ]; then
-            printf "  Введите версию Xray для загрузки (например: v25.4.30): "
+            printf "Enter the Xray version to download (for example: v25.4.30):"
             read -r version_selected
             if [ -z "$version_selected" ]; then
-                printf "  ${red}Ошибка${reset}: Версия не может быть пустой\n"
+                printf "${red}Error${reset}: Version cannot be empty\n"
                 sleep 1
                 continue
             fi
@@ -69,7 +69,7 @@ download_xray() {
         else
             version_selected=$(echo "$RELEASE_TAGS" | awk -v line="$choice" 'NR == line {print $0; exit}')
             if [ -z "$version_selected" ]; then
-                printf "  Выбранный номер ${red}вне диапазона.${reset} Пожалуйста, попробуйте снова\n"
+                printf "Selected number ${red}out of range.${reset} Please try again\n"
                 sleep 1
                 continue
             fi
@@ -95,7 +95,7 @@ download_xray() {
         esac
 
         if [ -z "$download_url" ]; then
-            printf "  ${red}Ошибка${reset}: Не удалось получить URL для загрузки Xray\n"
+            printf "${red}Error${reset}: Could not get Xray download URL\n"
             exit 1
         fi
 
@@ -108,7 +108,7 @@ download_xray() {
             download_url="$gh_proxy/$download_url"
         fi
 
-        printf "  ${yellow}Проверка${reset} доступности версии $version_selected...\n"
+        printf "${yellow}Check${reset} version availability $version_selected...\n"
 
         check_url_availability() {
             url=$1
@@ -135,28 +135,28 @@ download_xray() {
             fi
 
             if [ "$curl_exit_code" -eq 28 ]; then
-                printf "  ${red}Таймаут${reset} при проверке\n"
+                printf "${red}Timeout${reset} during check\n"
                 return 1
             elif [ "$curl_exit_code" -ne 0 ]; then
-                printf "  ${red}Ошибка curl ($curl_exit_code)${reset} при проверке\n"
+                printf "${red}Curl error ($curl_exit_code)${reset} while checking\n"
                 return 1
             fi
 
             case "$http_status" in
                 2[0-9][0-9])
-                    printf "  Файл ${green}доступен${reset}\n"
+                    printf "File ${green}available${reset}\n"
                     return 0
                     ;;
                 404)
-                    printf "  Файл ${red}не найден${reset} (404)\n"
+                    printf "File ${red}not found${reset} (404)\n"
                     return 2
                     ;;
                 403)
-                    printf "  ${red}Доступ запрещен${reset} (403)\n"
+                    printf "${red}Access denied${reset} (403)\n"
                     return 2
                     ;;
                 000)
-                    printf "  ${red}Нет соединения${reset}\n"
+                    printf "${red}No connection${reset}\n"
                     return 1
                     ;;
                 *)
@@ -166,16 +166,16 @@ download_xray() {
             esac
         }
 
-        # Проверка доступности версии
+        # Checking version availability
         if ! check_url_availability "$download_url" 10; then
             rm -f "$xray_dist"
-            printf "  ${red}Ошибка${reset}: Версия $version_selected недоступна\n"
+            printf "${red}Error${reset}: Version $version_selected is not available\n"
             continue
         fi
 
-        printf "  ${yellow}Выполняется загрузка${reset} выбранной версии Xray\n"
+        printf "${yellow}Loading${reset} selected Xray version\n"
 
-        # Загрузка Xray
+        # Loading Xray
         if curl --connect-timeout 10 $curl_timeout \
                -fL \
                -o "$xray_dist" \
@@ -184,21 +184,21 @@ download_xray() {
             if [ -s "$xray_dist" ]; then
                 if head -c 100 "$xray_dist" 2>/dev/null | grep -iq "<!DOCTYPE html\|<html\|Error\|404\|Not Found"; then
                     rm -f "$xray_dist"
-                    printf "  ${red}Ошибка${reset}: Получена HTML страница ошибки вместо файла\n"
+                    printf "${red}Error${reset}: Received HTML error page instead of file\n"
                     continue
                 fi
 
                 mv "$xray_dist" "$xtmp_dir/xray.$extension"
-                printf "  Xray ${green}успешно загружен${reset}\n"
+                printf "Xray ${green}successfully loaded${reset}\n"
                 return 0
             else
                 rm -f "$xray_dist"
-                printf "  ${red}Ошибка${reset}: Загруженный файл Xray поврежден\n"
+                printf "${red}Error${reset}: The downloaded Xray file is corrupt\n"
                 continue
             fi
         else
             rm -f "$xray_dist"
-            printf "  ${red}Ошибка${reset}: Не удалось загрузить Xray $version_selected\n"
+            printf "${red}Error${reset}: Failed to load Xray $version_selected\n"
             continue
         fi
     done

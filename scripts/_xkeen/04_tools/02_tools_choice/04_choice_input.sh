@@ -1,16 +1,16 @@
-# Функция для выбора пользователя между "Да" и "Нет" с номерами 0 и 1
+# Function for user selection between "Yes" and "No" with numbers 0 and 1
 input_concordance_list() {
     prompt_message="  $1"
-    error_message="  ${yellow}Пожалуйста, выберите вариант, введя номер 0 (Нет) или 1 (Да)${reset}"
+    error_message="${yellow}Please select an option by entering the number 0 (No) or 1 (Yes)${reset}"
 
     echo
     echo -e "$prompt_message"
-    echo "     0. Нет"
-    echo "     1. Да"
+    echo "0. No"
+    echo "1. Yes"
 
     while true; do
         echo
-        read -r -p "  Введите номер: " user_input
+        read -r -p "Enter number:" user_input
 
         case "$user_input" in
             0) return 1 ;;
@@ -30,32 +30,32 @@ toggle_param() {
     restart_needed="$3"
 
     if [ ! -f "$initd_file" ]; then
-        echo -e "  ${red}Ошибка${reset}: Не найден файл ${yellow}S99xkeen${reset}"
+        echo -e "${red}Error${reset}: File not found ${yellow}S99xkeen${reset}"
         return 1
     fi
 
     current_state=$(grep -m 1 -E "^[[:space:]]*$param=" "$initd_file" | cut -d'=' -f2 | tr -d '"[:space:]')
 
     echo
-    echo -e "  Текущее состояние ${description}:"
+    echo -e "Current state of ${description}:"
 
     if [ "$current_state" = "on" ]; then
-        echo -e "  ${green}Включено${reset}"
+        echo -e "${green}Enabled${reset}"
         echo
-        echo "     1. Отключить"
-        echo "     0. Оставить без изменений"
+        echo "1. Disable"
+        echo "0. Leave unchanged"
         desired_state="off"
     else
-        echo -e "  ${red}Отключено${reset}"
+        echo -e "${red}Disabled${reset}"
         echo
-        echo "     1. Включить"
-        echo "     0. Оставить без изменений"
+        echo "1. Enable"
+        echo "0. Leave unchanged"
         desired_state="on"
     fi
 
     echo
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             0)
                 return 0
@@ -64,7 +64,7 @@ toggle_param() {
                 break
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done
@@ -77,22 +77,22 @@ toggle_param() {
         {print}
         ' "$initd_file" > "$initd_file.tmp" && mv "$initd_file.tmp" "$initd_file"; then
         if [ "$desired_state" = "on" ]; then
-            echo -e "  Новое состояние ${description} ${green}включено${reset}"
+            echo -e "New state ${description} ${green}enabled${reset}"
         else
-            echo -e "  Новое состояние ${description} ${red}отключено${reset}"
+            echo -e "New state ${description} ${red}disabled${reset}"
         fi
 
         if [ "$restart_needed" = "reboot" ]; then
             echo
-            echo -e "  ${yellow}Перезагрузите роутер для применения изменений${reset}"
+            echo -e "${yellow}Reboot your router to apply the changes${reset}"
         elif [ "$restart_needed" = "restart" ]; then
             echo
-            echo -e "  ${yellow}Перезапустите XKeen для применения изменений${reset}"
+            echo -e "${yellow}Restart XKeen to apply changes${reset}"
         fi
 
         add_chmod_init
     else
-        echo -e "  ${red}Ошибка${reset} при изменении параметра $param"
+        echo -e "${red}Error${reset} when changing parameter $param"
         return 1
     fi
 }
@@ -110,11 +110,11 @@ choice_menu() {
     echo
 
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             1) return 0 ;;
             0) return 1 ;;
-            *) echo -e "  ${red}Некорректный ввод${reset}" ;;
+            *) echo -e "${red}Invalid input${reset}" ;;
         esac
     done
 }

@@ -1,19 +1,19 @@
 #!/bin/sh
 
-# Информация о службе: Запуск / Остановка XKeen
-# Версия: 2.29
+# Service Information: Start/Stop XKeen
+# Version: 2.29
 
-# Окружение
+# Environment
 PATH="/opt/bin:/opt/sbin:/sbin:/bin:/usr/sbin:/usr/bin"
 
-# Цвета
+# Colors
 green="\033[92m"
 red="\033[91m"
 yellow="\033[93m"
 light_blue="\033[96m"
 reset="\033[0m"
 
-# Имена
+# Names
 name_client="xray"
 name_app="XKeen"
 name_policy="xkeen"
@@ -21,7 +21,7 @@ name_profile="xkeen"
 name_chain="xkeen"
 name_prerouting_chain="$name_chain"
 
-# Директории
+# Directories
 directory_os_modules="/lib/modules/$(uname -r)"
 directory_user_modules="/opt/lib/modules"
 directory_configs_app="/opt/etc/$name_client"
@@ -30,7 +30,7 @@ directory_xray_asset="$directory_configs_app/dat"
 directory_logs="/opt/var/log"
 xkeen_cfg="/opt/etc/xkeen"
 
-# Файлы
+# Files
 file_netfilter_hook="/opt/etc/ndm/netfilter.d/proxy.sh"
 log_access="$directory_logs/$name_client/access.log"
 log_error="$directory_logs/$name_client/error.log"
@@ -47,7 +47,7 @@ url_policy="rci/show/ip/policy"
 url_keenetic_port="rci/ip/http"
 url_redirect_port="rci/ip/static"
 
-# Настройки правил iptables
+# iptables rule settings
 table_id="111"
 table_mark="0x111"
 table_redirect="nat"
@@ -58,27 +58,27 @@ ipv4_exclude="0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.
 ipv6_proxy="::1"
 ipv6_exclude="::/128 ::1/128 64:ff9b::/96 2001::/32 2002::/16 fd00::/8 ff00::/8 fe80::/10"
 
-# Перехват DNS в прокси
+# DNS interception in proxy
 proxy_dns="off"
 
-# Настройки запуска
+# Launch Settings
 start_attempts=10
 start_auto="on"
 start_delay=30
 
-# Контроль файловых дескрипторов
+# File descriptor control
 check_fd="off"
 arm64_fd=40000
 other_fd=10000
 delay_fd=60
 
-# Резервное копирование XKeen при обновлении
+# Backup XKeen when updating
 backup="on"
 
-# Поддержка IPv6
+# IPv6 support
 ipv6_support="on"
 
-# Функции журналирования
+# Logging Features
 log_info_router() {
     logger -p notice -t "$name_app" "$1"
 }
@@ -93,13 +93,13 @@ log_error_router() {
 
 log_error_terminal() {
     echo
-    echo -e "${red}Ошибка${reset}: $1" >&2
+    echo -e "${red}Error${reset}: $1" >&2
     exit 1
 }
 
 log_warning_terminal() {
     echo
-    echo -e "${yellow}Предупреждение${reset}: $1" >&2
+    echo -e "${yellow}Warning${reset}: $1" >&2
 }
 
 log_clean() {
@@ -122,7 +122,7 @@ json_get_ports() {
     fi
 }
 
-# Получение портов Keenetic
+# Getting Keenetic ports
 get_keenetic_port() {
     ports=""
     ports=$(json_get_ports)
@@ -170,7 +170,7 @@ apply_ipv6_state() {
     ip -6 addr show 2>/dev/null | grep -q "inet6 " || return 0
 
     if ! wait_for_webui; then
-        log_error_router "Веб-интерфейс роутера недоступен"
+        log_error_router "The router's web interface is unavailable"
         return 1
     fi
 
@@ -179,7 +179,7 @@ apply_ipv6_state() {
     sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1
     if [ "$(sysctl -n net.ipv6.conf.all.disable_ipv6 2>/dev/null)" -eq 1 ] &&
        [ "$(sysctl -n net.ipv6.conf.default.disable_ipv6 2>/dev/null)" -eq 1 ]; then
-        log_info_router "Отключение IPv6 выполнено"
+        log_info_router "IPv6 Disabled Completed"
         return 0
     fi
 }
@@ -192,7 +192,7 @@ get_ipver_support() {
     ip6tables_supported=$([ "$ip6_supported" = "true" ] && command -v ip6tables >/dev/null 2>&1 && echo true || echo false)
 }
 
-# Функция валидации xkeen.json
+# Function validations xkeen.json
 validate_xkeen_json() {
     if [ ! -f "$xkeen_config" ]; then
         return 0
@@ -262,7 +262,7 @@ read_ports_from_file() {
     sed 's/,$//'
 }
 
-# Функция обработки, валидации и нормализации списка портов
+# Function for processing, validating and normalizing a list of ports
 validate_and_clean_ports() {
     input_ports="$1"
 
@@ -302,7 +302,7 @@ validate_and_clean_ports() {
     ' | sort -n -u | tr '\n' ',' | sed 's/,$//'
 }
 
-# Функция обработки пользовательских портов
+# Custom Port Processing Function
 process_user_ports() {
     port_donor=$(validate_and_clean_ports "$(read_ports_from_file "$file_port_proxying")")
     port_exclude=$(validate_and_clean_ports "$(read_ports_from_file "$file_port_exclude")")
@@ -325,13 +325,13 @@ process_user_ports() {
     fi
 }
 
-# Проверка статуса прокси-клиента
+# Checking the status of the proxy client
 proxy_status() { pidof $name_client >/dev/null; }
 
-# Поиск конфигурации inbounds
+# Search for inbounds configuration
 [ "$name_client" = "xray" ] && file_inbounds=$(find "$directory_xray_config" -maxdepth 1 -name '*.json' -exec grep -lF '"inbounds":' {} \; -quit 2>/dev/null || true)
 
-# Поиск конфигураций DNS
+# Finding DNS Configurations
 file_dns_xray() {
     if [ "$proxy_dns" = "on" ]; then
         for file in "$directory_xray_config"/*.json; do
@@ -366,7 +366,7 @@ create_user() {
     fi
 }
 
-# Загрузка модулей
+# Loading modules
 load_modules() {
     module="$1"
     if [ -f "${directory_os_modules}/${module}" ]; then
@@ -376,7 +376,7 @@ load_modules() {
     fi
 }
 
-# Обработка модулей и портов
+# Processing modules and ports
 get_modules() {
     load_modules xt_TPROXY.ko
     load_modules xt_socket.ko
@@ -386,11 +386,11 @@ get_modules() {
         for module in xt_TPROXY.ko xt_socket.ko; do
             if ! lsmod | grep -q "${module%.ko}"; then
                 proxy_stop
-                log_error_router "Модуль ${module} не загружен"
+                log_error_router "Module ${module} not loaded"
                 log_error_terminal "
   Модуль ${module} не загружен
   Невозможно запустить прокси в режиме ${mode_proxy} без него
-  Установите компонент роутера '${yellow}Модули ядра подсистемы Netfilter${reset}'
+  Установите компонент роутера '${yellow}Netfilter subsystem kernel modules${reset}'
 "
             fi
         done
@@ -398,11 +398,11 @@ get_modules() {
 
     if [ -n "$port_donor" ] || [ -n "$port_exclude" ]; then
         if ! lsmod | grep -q xt_multiport; then
-            log_warning_router "Модуль multiport не загружен"
+            log_warning_router "Multiport module not loaded"
             log_warning_terminal "
   Модуль multiport не найден
   Невозможно использовать указанные порты без него
-  Установите компонент роутера '${yellow}Модули ядра подсистемы Netfilter${reset}'
+  Установите компонент роутера '${yellow}Netfilter subsystem kernel modules${reset}'
   
   Без модуля multiport прокси будет работать на всех портах
 "
@@ -416,7 +416,7 @@ strip_json_comments() {
     sed ':a; s:/\*[^*]*\*[^/]*\*/::g; ta; s/[[:space:]]*\/\/.*$//' "$@"
 }
 
-# Получение порта для Redirect
+# Getting the port for Redirect
 get_port_redirect() {
     if [ "$name_client" = "mihomo" ]; then
         port=$(yq eval '.redir-port // ""' "$mihomo_config" 2>/dev/null)
@@ -447,7 +447,7 @@ get_port_redirect() {
     echo "$port_redirect"
 }
 
-# Получение порта для TProxy
+# Obtaining a port for TProxy
 get_port_tproxy() {
     if [ "$name_client" = "mihomo" ]; then
         port=$(yq eval '.tproxy-port // ""' "$mihomo_config" 2>/dev/null)
@@ -481,7 +481,7 @@ get_port_tproxy() {
     echo "$port_tproxy"
 }
 
-# Получение сети для Redirect
+# Getting a network for Redirect
 get_network_redirect() {
     if [ "$name_client" = "mihomo" ]; then
         [ -n "$port_redirect" ] && echo "tcp" && return 0
@@ -514,7 +514,7 @@ get_network_redirect() {
     fi
 }
 
-# Получение сети для TProxy
+# Obtaining a network for TProxy
 get_network_tproxy() {
     if [ "$name_client" = "mihomo" ]; then
         if [ -n "$port_redirect" ] && [ -n "$port_tproxy" ]; then
@@ -553,7 +553,7 @@ get_network_tproxy() {
     fi
 }
 
-# Получение исключенных портов
+# Getting excluded ports
 get_port_exclude() {
     if [ -n "$api_static_json" ]; then
         port_exclude_redirect=$(echo "$api_static_json" | jq -r '.[] | if has("to-port") then .["to-port"] else .port end' 2>/dev/null |
@@ -568,11 +568,11 @@ get_port_exclude() {
     echo "$port_exclude"
 }
 
-# Получение исключений IPv4
+# Getting IPv4 exceptions
 get_exclude_ip4() {
     [ "$iptables_supported" != "true" ] && return
 
-    # Получаем провайдерский IPv4
+    # We get the provider's IPv4
     ipv4_eth=$(ip route get 195.208.4.1 2>/dev/null | grep -o 'src [0-9.]\+' | awk '{print $2}' ||
                ip route get 77.88.8.8 2>/dev/null | grep -o 'src [0-9.]\+' | awk '{print $2}')
     [ -n "$ipv4_eth" ] && ipv4_eth="${ipv4_eth}/32"
@@ -580,11 +580,11 @@ get_exclude_ip4() {
     echo "${ipv4_eth} ${ipv4_exclude}${user_ipv4}" | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' ' | sed 's/^ //; s/ $//'
 }
 
-# Получение исключений IPv6
+# Receiving IPv6 exceptions
 get_exclude_ip6() {
     [ "$ip6tables_supported" != "true" ] && return
 
-    # Получаем провайдерский IPv6
+    # We get the provider's IPv6
     ipv6_eth=$(ip -6 route get 2a0c:a9c7:8::1 2>/dev/null | awk -F 'src ' '{print $2}' | awk '{print $1}' ||
                ip -6 route get 2a02:6b8::feed:0ff 2>/dev/null | awk -F 'src ' '{print $2}' | awk '{print $1}')
     [ -n "$ipv6_eth" ] && ipv6_eth="${ipv6_eth}/128"
@@ -592,7 +592,7 @@ get_exclude_ip6() {
     echo "${ipv6_eth} ${ipv6_exclude}${user_ipv6}" | tr ' ' '\n' | awk '!seen[$0]++' | tr '\n' ' ' | sed 's/^ //; s/ $//'
 }
 
-# Получение метки политики
+# Retrieving a Policy Label
 get_policy_mark() {
     if [ -n "$api_policy_json" ]; then
         policy_mark=$(echo "$api_policy_json" | jq -r ".[] | select(.description | ascii_downcase == \"${name_policy}\") | .mark" 2>/dev/null)
@@ -605,19 +605,19 @@ get_policy_mark() {
     fi
 }
 
-# Получаем пользовательские политики
+# Getting custom policies
 get_user_policies() {
     [ ! -f "$xkeen_config" ] && return
     jq -r '.xkeen.policy[]? | "\(.name)|\(.port // "")" ' "$xkeen_config" 2>/dev/null
 }
 
-# Проверка на конфликт имен политик
+# Policy name conflict check
 check_policy_name_conflict() {
     if [ -f "$xkeen_config" ]; then
         conflict=$(jq -r --arg main "$name_policy" '.xkeen.policy[] | select((.name | ascii_downcase) == ($main | ascii_downcase)) | .name' "$xkeen_config" 2>/dev/null | head -n 1)
 
         if [ -n "$conflict" ]; then
-            log_error_router "Ошибка конфигурации: Имя политики в xkeen.json совпадает с системным"
+            log_error_router "Configuration error: The policy name in xkeen.json is the same as the system one"
             log_error_terminal "
   В файле ${yellow}xkeen.json${reset} найдена политика с именем '${red}${conflict}${reset}'
   Это имя зарезервировано основной службой XKeen
@@ -630,7 +630,7 @@ check_policy_name_conflict() {
     fi
 }
 
-# Получаем порты пользовательских политик
+# Getting custom policy ports
 resolve_user_policies() {
     get_user_policies | while IFS='|' read -r pname pports; do
         if [ -n "$api_policy_json" ]; then
@@ -640,7 +640,7 @@ resolve_user_policies() {
         [ -z "$mark" ] && continue
 
         if [ -z "$pports" ]; then
-            # Порты не указаны -> режим "all" (все порты)
+            # No ports specified -> "all" mode (all ports)
             mode="all"
             clean_ports=""
         else
@@ -667,7 +667,7 @@ resolve_user_policies() {
     done
 }
 
-# Получение режима прокси-клиента
+# Getting proxy client mode
 get_mode_proxy() {
     if [ -n "$port_redirect" ] && [ -n "$port_tproxy" ]; then
         mode_proxy="Mixed"
@@ -681,7 +681,7 @@ get_mode_proxy() {
     echo "$mode_proxy"
 }
 
-# Настройка брандмауэра
+# Configuring the firewall
 configure_firewall() {
     : > "$file_netfilter_hook"
     cat > "$file_netfilter_hook" <<EOL
@@ -716,7 +716,7 @@ ip6tables_supported=$ip6tables_supported
 arm64_fd=$arm64_fd
 other_fd=$other_fd
 
-# Перезапуск скрипта
+# Restarting the script
 restart_script() {
     exec /bin/sh "\$0" "\$@"
 }
@@ -731,7 +731,7 @@ if pidof "\$name_client" >/dev/null; then
         fi
     }
 
-    # Добавление правил-исключений
+    # Adding exception rules
     add_exclude_rules() {
         chain="\$1"
         for exclude in \$exclude_list; do
@@ -752,7 +752,7 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Добавление правил iptables
+    # Adding iptables rules
     add_ipt_rule() {
         family="\$1"
         table="\$2"
@@ -806,11 +806,11 @@ if pidof "\$name_client" >/dev/null; then
         fi
     }
 
-    # Настройка таблицы маршрутов
+    # Setting up the route table
     configure_route() {
         ip_version="\$1"
 
-        # Определяем таблицу маршрутизации
+        # Defining the routing table
         if [ -n "\$policy_mark" ]; then
             policy_table=\$(ip rule show | awk -v policy="\$policy_mark" '\$0 ~ policy && /lookup/ && !/blackhole/ {print \$(NF)}' | sed -n '1p')
             source_table="\$policy_table"
@@ -818,7 +818,7 @@ if pidof "\$name_client" >/dev/null; then
             source_table="main"
         fi
 
-        # Проверяем есть ли default маршрут
+        # Checking if there is a default route
         check_default() {
             if [ \$ip_version = 6 ] && ! ip -6 route show default 2>/dev/null | grep -q .; then
                 return 0
@@ -847,7 +847,7 @@ if pidof "\$name_client" >/dev/null; then
         ip -\$ip_version route add local default dev lo table \$table_id >/dev/null 2>&1 || true
         ip -\$ip_version rule add fwmark \$table_mark lookup \$table_id >/dev/null 2>&1 || true
 
-        # Копируем маршруты
+        # Copying routes
         ip -\$ip_version route show table \$source_table 2>/dev/null | while read -r route_line; do
             case "\$route_line" in
                 default*|unreachable*|blackhole*) continue ;;
@@ -857,7 +857,7 @@ if pidof "\$name_client" >/dev/null; then
         return 0
     }
 
-    # Создание множественных правил multiport
+    # Creating multiple multiport rules
     add_multiport_rules() {
         family="\$1"
         table="\$2"
@@ -883,7 +883,7 @@ if pidof "\$name_client" >/dev/null; then
         done
     }
 
-    # Добавление цепочек PREROUTING
+    # Adding PREROUTING chains
     add_prerouting() {
         family="\$1"
         table="\$2"
@@ -893,7 +893,7 @@ if pidof "\$name_client" >/dev/null; then
                 [ "\$table" = "mangle" ] && [ "\$net" != "udp" ] && continue
             fi
 
-            # Пользовательские политики из xkeen.json
+            # Custom policies from xkeen.json
             echo "\$user_policies" | while IFS='|' read -r pmark pmode pports; do
                 [ -z "\$pmark" ] && continue
                 if [ "\$pmode" = "all" ]; then
@@ -917,12 +917,12 @@ if pidof "\$name_client" >/dev/null; then
                 fi
             done
 
-            # Политика xkeen (стандартная)
+            # xkeen policy (standard)
             if [ -n "\$policy_mark" ]; then
-                # заданы порты проксирования
+                # Proxy ports are set
                 if [ -n "\$port_donor" ]; then
                     add_multiport_rules "\$family" "\$table" "\$net" "\$policy_mark" "\$port_donor"
-                # заданы порты исключения
+                # exclusion ports are set
                 elif [ -n "\$port_exclude" ]; then
                     num_ports=\$(echo "\$port_exclude" | tr ',' '\n' | wc -l)
                     i=1
@@ -937,13 +937,13 @@ if pidof "\$name_client" >/dev/null; then
                     rule_catch="-m connmark --mark \$policy_mark -m conntrack ! --ctstate INVALID -p \$net -j \$name_prerouting_chain"
                     ipt -C PREROUTING \$rule_catch >/dev/null 2>&1 || ipt -A PREROUTING \$rule_catch >/dev/null 2>&1
                 else
-                    # Политика xkeen, когда порты не указаны (проксирование на всех портах)
+                    # xkeen policy when ports are not specified (proxy on all ports)
                     rule_catch="-m connmark --mark \$policy_mark -m conntrack ! --ctstate INVALID -j \$name_prerouting_chain"
                     ipt -C PREROUTING \$rule_catch >/dev/null 2>&1 || ipt -A PREROUTING \$rule_catch >/dev/null 2>&1
                 fi
-            # НЕТ политики xkeen
+            # NO xkeen policy
             else
-                # заданы порты проксирования
+                # Proxy ports are set
                 if [ -n "\$port_donor" ]; then
                     num_ports=\$(echo "\$port_donor" | tr ',' '\n' | wc -l)
                     i=1
@@ -954,7 +954,7 @@ if pidof "\$name_client" >/dev/null; then
                         ipt -C PREROUTING \$rule_catch >/dev/null 2>&1 || ipt -A PREROUTING \$rule_catch >/dev/null 2>&1
                         i=\$((i+7))
                     done
-                # заданы порты исключения
+                # exclusion ports are set
                 elif [ -n "\$port_exclude" ]; then
                     num_ports=\$(echo "\$port_exclude" | tr ',' '\n' | wc -l)
                     i=1
@@ -966,7 +966,7 @@ if pidof "\$name_client" >/dev/null; then
                         i=\$((i+7))
                     done
                    ipt -A PREROUTING -m conntrack ! --ctstate INVALID -p \$net -j "\$name_prerouting_chain" >/dev/null 2>&1
-                # Если нет ни xkeen, ни пользовательских политик -> перехватываем всё
+                # If there is neither xkeen nor user policies -> intercept everything
                 else
                     rule_catch="-m conntrack ! --ctstate INVALID -j \$name_prerouting_chain"
                     ipt -C PREROUTING \$rule_catch >/dev/null 2>&1 || ipt -A PREROUTING \$rule_catch >/dev/null 2>&1
@@ -1059,7 +1059,7 @@ EOL
     sh "$file_netfilter_hook"
 }
 
-# Удаление правил Iptables
+# Removing Iptables rules
 clean_firewall() {
     [ -f "$file_netfilter_hook" ] && : > "$file_netfilter_hook"
 
@@ -1125,7 +1125,7 @@ clean_firewall() {
     fi
 }
 
-# Мониторинг файловых дескрипторов
+# File Descriptor Monitoring
 monitor_fd() {
     while true; do
         client_pid=$(pidof "$name_client" | awk '{print $1}')
@@ -1133,7 +1133,7 @@ monitor_fd() {
             limit=$(awk '/Max open files/ {print $4}' "/proc/$client_pid/limits")
             current=$(ls -1 /proc/$client_pid/fd 2>/dev/null | wc -l)
             if [ "$limit" -gt 0 ] && [ "$current" -gt $((limit * 90 / 100)) ]; then
-                log_warning_router "$name_client открыл $current из $limit файловых дескрипторов, инициирован перезапуск"
+                log_warning_router "$name_client opened $current of $limit file descriptors, restart initiated"
                 fd_out=true
                 proxy_stop
                 proxy_start "on"
@@ -1156,7 +1156,7 @@ missing_files_template='
   2. Либо скопируйте недостающий файл вручную и сделайте исполняемым
 '
 
-# Запуск прокси-клиента
+# Running a proxy client
 proxy_start() {
     start_manual="$1"
     if [ "$start_manual" = "on" ] || [ "$start_auto" = "on" ]; then
@@ -1175,11 +1175,11 @@ proxy_start() {
         if [ "$mode_proxy" != "Other" ]; then
             policy_mark=$(get_policy_mark)
             
-            # Проверка наличия политики xkeen и пользовательских политик
+            # Checking for xkeen policy and custom policies
             if [ -n "$policy_mark" ]; then
                 user_policies=$(resolve_user_policies)
             else
-                # Если xkeen не найдена, проверяем, были ли заданы user policies
+                # If xkeen is not found, check if user policies have been set
                 raw_user_policies=$(get_user_policies)
                 
                 if [ -n "$raw_user_policies" ]; then
@@ -1194,7 +1194,7 @@ proxy_start() {
   Прокси будет запущен для всего устройства
 "
                 fi
-                # Принудительно очищаем user_policies, чтобы сработал fallback
+                # Force clear user_policies for fallback to work
                 user_policies=""
             fi
 
@@ -1207,11 +1207,11 @@ proxy_start() {
             fi
             if [ "$mode_proxy" = "TProxy" ]; then
                 keenetic_ssl="$(get_keenetic_port)" || {
-                    log_error_router "Порт 443 занят сервисами Keenetic"
+                    log_error_router "Port 443 is occupied by Keenetic services"
                     log_error_terminal "
   Необходимый для режима ${yellow}TProxy${reset} ${red}443 порт занят${reset} сервисами Keenetic
 
-  Освободите его на странице 'Пользователи и доступ' веб-интерфейса роутера
+  Освободите его на странице 'Users and access' веб-интерфейса роутера
 "
                     proxy_stop
                     exit 1
@@ -1219,15 +1219,15 @@ proxy_start() {
             fi
         fi
         if proxy_status; then
-            echo -e "  Прокси-клиент уже ${green}запущен${reset}"
+            echo -e "Proxy client is already ${green}started${reset}"
             [ "$mode_proxy" != "Other" ] && configure_firewall
             if [ "$start_manual" = "on" ]; then
-                log_error_terminal "Не удалось запустить $name_client, так как он уже запущен"
+                log_error_terminal "$name_client could not be started because it is already running"
             else
-                log_info_router "Прокси-клиент успешно запущен в режиме $mode_proxy"
+                log_info_router "Proxy client started successfully in $mode_proxy mode"
             fi
         else
-            log_info_router "Инициирован запуск прокси-клиента"
+            log_info_router "Proxy client startup initiated"
             delay_increment=1
             current_delay=0
             [ "$start_manual" != "on" ] && current_delay=$start_delay
@@ -1294,18 +1294,18 @@ proxy_start() {
                 sleep 2 && sleep "$current_delay"
                 if proxy_status; then
                     [ "$mode_proxy" != "Other" ] && configure_firewall
-                    echo -e "  Прокси-клиент ${green}запущен${reset} в режиме ${yellow}${mode_proxy}${reset}"
+                    echo -e "Proxy client ${green}launched${reset} in ${yellow}${mode_proxy}${reset}"
                     if [ -n "$api_policy_json" ]; then
                         if echo "$api_policy_json" | jq --arg policy "$name_policy" -e 'any(.[]; .description | ascii_downcase == $policy)' > /dev/null; then
                             if [ -e "/tmp/noinet" ]; then
                                 echo
-                                echo -e "  У политики ${yellow}$name_policy${reset} ${red}нет доступа в интернет${reset}"
-                                echo "  Проверьте, установлена ли галка на подключении к провайдеру"
+                                echo -e "Policy ${yellow}$name_policy${reset} ${red}does not have internet access${reset}"
+                                echo "Check if the checkbox for connecting to your provider is checked"
                             fi
                         fi
                     fi
-                    [ "$mode_proxy" = "Other" ] && echo -e "  Функция прозрачного прокси ${red}не активна${reset}. Направляйте соединения на ${yellow}${name_client}${reset} вручную"
-                    log_info_router "Прокси-клиент успешно запущен в режиме $mode_proxy"
+                    [ "$mode_proxy" = "Other" ] && echo -e "The transparent proxy function ${red}is not active${reset}. Route connections to ${yellow}${name_client}${reset} manually"
+                    log_info_router "Proxy client started successfully in $mode_proxy mode"
                         if [ "$check_fd" = "on" ]; then
                         if [ -f "$file_pid_fd" ]; then
                             kill -9 "$(cat "$file_pid_fd")" 2>/dev/null
@@ -1319,24 +1319,24 @@ proxy_start() {
                 current_delay=$((current_delay + delay_increment))
                 attempt=$((attempt + 1))
             done
-            echo -e "  ${red}Не удалось запустить${reset} прокси-клиент"
-            log_error_terminal "Не удалось запустить прокси-клиент"
+            echo -e "${red}Failed to start ${reset} proxy client"
+            log_error_terminal "Failed to start proxy client"
         fi
     else
         clean_firewall
     fi
 }
 
-# Остановка прокси-клиента
+# Stopping the proxy client
 proxy_stop() {
     if ! proxy_status; then
-        echo -e "  Прокси-клиент ${red}не запущен${reset}"
+        echo -e "Proxy client ${red}not running${reset}"
         if [ -f "$file_pid_fd" ]; then
             kill -9 "$(cat "$file_pid_fd")" 2>/dev/null
             rm -f "$file_pid_fd"
         fi
     else
-        log_info_router "Инициирована остановка прокси-клиента"
+        log_info_router "Proxy client stop initiated"
         if [ -f "$file_pid_fd" ]; then
             kill -9 "$(cat "$file_pid_fd")" 2>/dev/null
             rm -f "$file_pid_fd"
@@ -1349,32 +1349,32 @@ proxy_stop() {
             killall -q -9 "$name_client"
                 sleep 1 && sleep "$current_delay"
             if ! proxy_status; then
-                echo -e "  Прокси-клиент ${red}остановлен${reset}"
-                log_info_router "Прокси-клиент успешно остановлен"
+                echo -e "Proxy client ${red}stopped${reset}"
+                log_info_router "Proxy client stopped successfully"
                 return 0
             fi
             current_delay=$((current_delay + delay_increment))
             attempt=$((attempt + 1))
         done
-        echo -e "  Прокси-клиент ${red}не удалось остановить${reset}"
-        log_error_terminal "Не удалось остановить прокси-клиент"
+        echo -e "Proxy client ${red}failed to stop${reset}"
+        log_error_terminal "Failed to stop proxy client"
     fi
 }
 
-# Менеджер команд
+# Team manager
 case "$1" in
     start) proxy_start "$2" ;;
     stop) proxy_stop ;;
     status)
         if proxy_status; then
             mode_proxy=$(grep '^mode_proxy=' $file_netfilter_hook | awk -F'"' '{print $2}')
-            echo -e "  Прокси-клиент ${yellow}$name_client${reset} ${green}запущен${reset} в режиме ${yellow}$mode_proxy${reset}"
+            echo -e "Proxy client ${yellow}$name_client${reset} ${green}launched${reset} in mode ${yellow}$mode_proxy${reset}"
         else
-            echo -e "  Прокси-клиент ${red}не запущен${reset}"
+            echo -e "Proxy client ${red}not running${reset}"
         fi
         ;;
     restart) proxy_stop; proxy_start "$2" ;;
-    *) echo -e "  Команды: ${green}start${reset} | ${red}stop${reset} | ${yellow}restart${reset} | status" ;;
+    *) echo -e "Команды: ${green}start${reset} | ${red}stop${reset} | ${yellow}restart${reset} | status" ;;
 esac
 
 exit 0

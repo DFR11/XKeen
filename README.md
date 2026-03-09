@@ -1,63 +1,63 @@
 # XKeen 1.1.3.9
 
-> **XKeen** — утилита для выборочной маршрутизации сетевого трафика через прокси‑движки **Xray** и **Mihomo** на роутерах **Keenetic**/**Netcraze**.  
-> Позволяет прозрачно направлять TCP/UDP‑трафик только выбранных клиентов, не затрагивая остальную сеть.
+> **XKeen** is a utility for selective routing of network traffic through proxy engines **Xray** and **Mihomo** on **Keenetic**/**Netcraze** routers.
+> Allows you to transparently route TCP/UDP traffic to only selected clients without affecting the rest of the network.
 
 ---
 
-## Основные возможности
+## Key Features
 
-- Выборочная маршрутизация для клиентов в политике доступа в интернет
-- Сохранение прямого выхода в интернет для остальных клиентов
-- Маршрутизация без политики для всех клиентов роутера
+- Selective routing for clients in Internet access policy
+- Maintaining direct Internet access for other clients
+- Routing without policy for all router clients
 - Поддержка режимов **TProxy**, **Mixed**, **Redirect**, **Other** (socks5/http)
-- Прозрачное проксирование **TCP** и **UDP**
-- Поддержка ядер-проксирования **Xray** и **Mihomo**
-- Совместимость с **KeeneticOS 5+**
+- Transparent proxying **TCP** and **UDP**
+- Support for **Xray** and **Mihomo** proxy kernels
+- Compatible with **KeeneticOS 5+**
 - Управление через shell и [веб-панели](https://github.com/jameszeroX/XKeen?tab=readme-ov-file#дополнения) сторонних разработчиков
 
-XKeen работает полностью на стороне роутера, не меняет настройки клиентов и не требует установки на них дополнительных программ.
+XKeen works entirely on the router side, does not change client settings and does not require installation of additional programs on them.
 
 ---
 
-## Предупреждения
+## Warnings
 
 > [!WARNING]
-> Данный материал подготовлен в научно‑технических целях. XKeen предназначен для управления межсетевым экраном роутера Keenetic, защищающим домашнюю сеть. Разработчик не несёт ответственности за иное использование утилиты. Перед применением убедитесь, что ваши действия соответствуют законодательству вашей страны.
+> This material was prepared for scientific and technical purposes. XKeen is designed to manage the Keenetic router firewall, which protects your home network. The developer is not responsible for any other use of the utility. Before use, make sure that your actions comply with the laws of your country.
 
 > [!CAUTION]
-> В некоторых случаях протокол IPv6 создаёт проблемы при проксировании. В KeeneticOS IPv6 нельзя полностью отключить стандартными средствами. В XKeen реализован альтернативный механизм его отключения, который полностью убирает IPv6‑трафик на роутере. Это **экспериментальная функция** и может привести к некорректной работе отдельных сервисов Keenetic. Используйте её только при необходимости.
+> In some cases, IPv6 creates problems with proxying. In KeeneticOS, IPv6 cannot be completely disabled using standard means. XKeen implements an alternative mechanism for disabling it, which completely removes IPv6 traffic on the router. This is an **experimental feature** and may cause some Keenetic services to not work correctly. Use it only when necessary.
 
 > [!NOTE]
-> Установка XKeen гарантируется на внешние USB‑накопители. Установка во внутреннюю память роутера возможна, но требует опыта пользователя. Проблемы, связанные с установкой во внутреннюю память, не считаются ошибками XKeen.
+> Installation of XKeen is guaranteed on external USB drives. Installation into the internal memory of the router is possible, but requires user experience. Problems related to installation to internal memory are not considered XKeen errors.
 
 ---
 
-Данный репозиторий является форком оригинального XKeen с исправлениями, расширенной функциональностью и поддержкой актуальных версий KeeneticOS.
+This repository is a fork of the original XKeen with fixes, expanded functionality and support for current versions of KeeneticOS.
 
-## Ключевые изменения форка
+## Key changes of the fork
 
-### Исправлено
+### Corrected
 
-- автозапуск XKeen
-- сняты ограничения на количество используемых портов
+- autostart XKeen
+- restrictions on the number of used ports have been removed
 
-### Добавлено
+### Added
 
-- поддержка **KeeneticOS 5+**
-- управление IPv6
-- поддержка ядра **Mihomo**
-- быстрое переключение Xray / Mihomo
+- support **KeeneticOS 5+**
+- IPv6 management
+- **Mihomo** kernel support
+- fast switching Xray / Mihomo
 - контроль [файловых дескрипторов](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#контроль-файловых-дескрипторов)
 - [внешние списки](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#внешние-списки-портов-и-ip) IP и портов
 - [OffLine](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#offline-установка)‑установка
 - [Self-Hosted](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#self-hosted-прокси-для-загрузки)-прокси для загрузки компонентов
 
-### Удалено
+### Deleted
 
-- не актуальные и повреждённые геобазы
-- неиспользуемые конфигурационные файлы
-- устаревшие параметры запуска и задачи планировщика
+- out-of-date and damaged geobases
+- unused configuration files
+- outdated launch options and scheduler tasks
 
 ---
 
@@ -65,18 +65,18 @@ XKeen работает полностью на стороне роутера, н
 
 ---
 
-Список параметров запуска XKeen доступен в справке:
+A list of XKeen launch options is available in the help:
 ```bash
 xkeen -h
 ```
 
 ---
 
-## Порядок установки
+## Installation procedure
 
-Требуется роутер **Keenetic**/**Netcraze** с предварительно установленной средой Entware
+Requires **Keenetic**/**Netcraze** router with Entware pre-installed
 
-Вариант 1:
+Option 1:
 
 ```bash
 opkg update && opkg upgrade && opkg install curl tar && cd /tmp
@@ -85,7 +85,7 @@ curl -OL "$url" && chmod +x install.sh
 ./install.sh
 ```
 
-Вариант 2:
+Option 2:
 
 ```bash
 opkg update && opkg upgrade && opkg install curl tar && cd /tmp
@@ -98,13 +98,13 @@ xkeen -i
 
 ---
 
-## Поддержка проекта
+## Project support
 
 Форк XKeen, как и оригинал, совершено бесплатен и не имеет каких либо ограничений по использованию. Надеюсь, доработки XKeen, многие из которых я сделал по Вашим просьбам, оказались полезны, так же, как и мои сообщения в [телеграм-чате](https://t.me/+8Cvh7oVf6cE0MWRi). Для меня очень важно понимать, что труд и время потрачены не зря. Буду благодарен за любую Вашу поддержку на развитие проекта:
 
 - [CloudTips](https://pay.cloudtips.ru/p/7edb30ec)
 - [ЮMoney](https://yoomoney.ru/to/41001350776240)
-- Карта МИР: `2204 1201 2976 4110`
+- MIR card: `2204 1201 2976 4110`
 - USDT, сеть TRC20: `TQhy1LbuGe3Bz7EVrDYn67ZFLDjDBa2VNX`
 - USDT, сеть ERC20: `0x6a5DF3b5c67E1f90dF27Ff3bd2a7691Fad234EE2`
 
@@ -112,7 +112,7 @@ xkeen -i
 
 ---
 
-## Дополнения
+## Add-ons
 
 - XKeen UI — https://github.com/zxc-rv/XKeen-UI
 - XKeen UI — https://github.com/umarcheh001/Xkeen-UI
@@ -124,7 +124,7 @@ xkeen -i
 
 ---
 
-## Источники и ссылки
+## Sources and links
 
 - Origin XKeen — https://github.com/Skrill0/XKeen
 - Xray-core — https://github.com/XTLS/Xray-core

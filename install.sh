@@ -5,7 +5,7 @@ urlfix="https://raw.githubusercontent.com/jameszeroX/xkeen/main/01_info_variable
 if ! curl -OL --connect-timeout 10 -m 60 "$url"; then
     if ! curl -OL --connect-timeout 10 -m 60 "https://gh-proxy.com/$url"; then
         if ! curl -OL --connect-timeout 10 -m 60 "https://ghfast.top/$url"; then
-            echo "Ошибка: не удалось загрузить xkeen.tar.gz"
+            echo "Error: failed to load xkeen.tar.gz"
             exit 1
         fi
     fi

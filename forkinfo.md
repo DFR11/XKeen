@@ -1,58 +1,58 @@
-## Сравнение форка с оригинальным XKeen
+## Comparison of the fork with the original XKeen
 
-Изменения:
-- Исправлено добавление портов в исключения (ранее команду `xkeen -ape` нужно было прерывать по ctrl+c)
-- Исправлена совместная работа режима TProxy и socks5 (ранее Xkeen запускался в Mixed режиме, что приводило к неработоспособности прозрачного проксирования)
+Changes:
+- Fixed adding ports to exceptions (previously the `xkeen -ape` command had to be interrupted by ctrl+c)
+- Fixed the joint operation of TProxy and socks5 modes (previously Xkeen was launched in Mixed mode, which led to transparent proxying not working)
 - Исправлен автозапуск XKeen при старте роутера (ранее XKeen в некоторых случаях не запускался или запускался для всего устройства, а не только для своей политики - [FAQ п.12](https://jameszero.net/faq-xkeen.htm#12))
-- Снято техническое ограничение, позволявшее использовать не более 15 портов проксирования и портов исключенных из проксирования
-- Переработана логика загрузки XKeen, Xray, Mihomo и GeoFile из интернета, уменьшающая вероятность их повреждения
-- Переработана логика применения правил iptables и ip6tables (ранее XKeen применял все правила, даже при не установленном компоненте IPv6)
-- Переработана логика добавления и удаления портов проксирования и исключаемых портов
-- При обновлении геофайлов, добавлении/удалении портов проксирования или портов исключений, а также выполнении других настроек, требующих перезапуск XKeen, прокси-клиент теперь перезапускается если был до этого запущен
-- При запуске `xkeen -d` без цифрового параметра, теперь отображается информация о текущей задержке автозапуска
-- При запуске или перезапуске XKeen теперь отображается информация о режиме работы - TProxy, Mixed, Redirect, Other
+- The technical restriction that allowed the use of no more than 15 proxy ports and ports excluded from proxying has been removed
+- The logic for downloading XKeen, Xray, Mihomo and GeoFile from the Internet has been reworked, reducing the likelihood of their damage
+- The logic for applying iptables and ip6tables rules has been reworked (previously XKeen applied all rules, even when the IPv6 component was not installed)
+- The logic for adding and removing proxy ports and excluded ports has been reworked
+- When updating geofiles, adding/removing proxy ports or exclusion ports, as well as performing other settings that require restarting XKeen, the proxy client is now restarted if it was previously running
+- When running `xkeen -d` without a numeric parameter, information about the current autorun delay is now displayed
+- When starting or restarting XKeen, information about the operating mode is now displayed - TProxy, Mixed, Redirect, Other
 - Не актуальные GeoSite и GeoIP antifilter-community заменены на базы [Re:filter](https://github.com/1andrevich/Re-filter-lists)
-- Объединены задачи планировщика по обновлению GeoSite и GeoIP. В связи с этим упразднены параметры запуска `-ugs`, `-ugi`, `-ugsc`, `-ugic`, `-dgsc`, `-dgic`
-- Параметр запуска `-ux` для обновления ядра Xray теперь поддерживает повышение/понижение версии
-- Корректная деинсталляция xray-core (ранее пакет xray не удалялся при деинсталляции)
-- Справка (`xkeen -h`) выровнена по табуляции и повышен контраст текста
-- Скрипт запуска S24xray переименован в S99xkeen
-- Рефакторинг кода скриптов
-- Актуализация конфигурационных файлов xray-core
+- The scheduler tasks for updating GeoSite and GeoIP have been combined. In this regard, the launch parameters `-ugs`, `-ugi`, `-ugsc`, `-ugic`, `-dgsc`, `-dgic` have been removed
+- The `-ux` startup option for Xray kernel upgrade now supports upgrading/downgrading
+- Correct uninstallation of xray-core (previously the xray package was not removed during uninstallation)
+- Help (`xkeen -h`) tab-aligned and increased text contrast
+- S24xray launch script renamed to S99xkeen
+- Refactoring script code
+- Updating xray-core configuration files
 
-Добавлено:
-- Совместимость с прошивкой KeeneticOS 5+
-- Возможность отключить/включить протокол IPv6 в KeeneticOS (параметр запуска `-ipv6`)
-- Поддержка ядра Mihomo
-- Возможность сменить ядро проксирования (Xray/Mihomo) параметрами `-xray` и `-mihomo`
-- При обновлении Xray и Mihomo теперь отображается версия уже установленного в роутере бинарника
-- Добавлена возможность отключить/включить перехват DNS запросов при соответствующей настройке прокси-клиента (параметр запуска `-dns`)
+Added:
+- Compatible with KeeneticOS 5+ firmware
+- Ability to disable/enable IPv6 protocol in KeeneticOS (launch parameter `-ipv6`)
+- Mihomo kernel support
+- Ability to change the proxy kernel (Xray/Mihomo) with the `-xray` and `-mihomo` parameters
+- When updating Xray and Mihomo, the version of the binary already installed in the router is now displayed
+- Added the ability to disable/enable interception of DNS requests when the proxy client is configured accordingly (launch parameter `-dns`)
 - Поддержка внешних файлов `ip_exclude.lst`, `port_proxying.lst` и `port_exclude.lst` в директории `/opt/etc/xkeen/` для указания IP и портов (проксирования/исключения из проксирования)
 - Возможность загружать компоненты XKeen через [Self-Hosted прокси](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#self-hosted-прокси-для-загрузки-компонентов) при недоступности GitHub (переменные `gh_proxy(1|2)` в файле `01_info_variable.sh`)
-- Возможность отключить резервное копирование XKeen при обновлении (переменная `backup` в файле `S99xkeen`)
+- Option to disable XKeen backup when updating (`backup` variable in `S99xkeen` file)
 - Возможность [OffLine установки](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#offline-установка) (параметр `-io`)
 - Возможность установки GeoIP базы [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip)
 - Обновление [zkeen.dat](https://github.com/jameszeroX/zkeen-domains) и [zkeenip.dat](https://github.com/jameszeroX/zkeen-ip) по расписанию средствами XKeen
-- При недоступности GitHub API используется резервный источник релизов для XKeen, Xray и Mihomo 
-- При установке теперь можно выбрать, добавлять ли XKeen в автозагрузку при включении роутера или нет
-- При пропуске установки Xray, его конфигурационные файлы и геобазы так же пропускаются и не устанавливаются
-- Mihomo и парсер yaml-файлов Yq устанавливаются и регистрируются в entware, как полноценные ipk-пакеты
-- Параметр запуска `-remove` для полной деинсталляции XKeen (ранее деинсталляцию нужно было выполнять покомпонентно)
-- Параметры запуска `-ug` (обновление геофайлов), `-ugc` (управление заданием Cron, обновляющим геофайлы), `-dgc` (удаление задания Cron, обновляющего геофайлы)
-- Параметр запуска `-um` для обновления/установки ядра Mihomo (поддерживается повышение/понижение версии)
-- Параметры запуска: `-rrm` (обновить регистрацию Mihomo), `-drm` (удалить регистрацию Mihomo)
-- Параметр запуска `-dm` для деинсталляции ядра Mihomo
-- Параметр запуска `-g`, позволяющий переустановить (добавить/удалить) геофайлы для Xray
-- Параметр запуска `-channel`, позволяющий выбрать канал обновления XKeen между Stable и Dev ветками
-- Возможность резервного копирования и восстановления конфигурации Mihomo (параметры `-mb`, `-mbr`)
+- If the GitHub API is unavailable, a backup release source for XKeen, Xray and Mihomo is used
+- During installation, you can now choose whether to add XKeen to startup when you turn on the router or not
+- If you skip the installation of Xray, its configuration files and geobases are also skipped and not installed
+- Mihomo and the Yq yaml file parser are installed and registered in entware as full-fledged ipk packages
+- Launch option `-remove` to completely uninstall XKeen (previously you had to uninstall it piece by piece)
+- Launch options `-ug` (update geofiles), `-ugc` (manage a Cron job that updates geofiles), `-dgc` (delete a Cron job that updates geofiles)
+- Launch option `-um` to update/install Mihomo kernel (upgrade/downgrade supported)
+- Launch options: `-rrm` (update Mihomo registration), `-drm` (delete Mihomo registration)
+- Launch option `-dm` to uninstall the Mihomo kernel
+- Launch option `-g`, which allows you to reinstall (add/remove) geofiles for Xray
+- Launch parameter `-channel`, allowing you to select the XKeen update channel between the Stable and Dev branches
+- Ability to backup and restore Mihomo configuration (parameters `-mb`, `-mbr`)
 - Возможность контролировать число открытых файловых дескрипторов, используемых прокси-клиентом и перезапускать процесс при исчерпании лимита  [подробнее](https://github.com/jameszeroX/XKeen/blob/main/configuration.md#контроль-файловых-дескрипторов)
 
-Удалено:
+Deleted:
 - Поддержка внешнего файла `/opt/etc/xkeen_exclude.lst` c IP-адресами и подсетями для исключения из проксирования
-- Возможность установки GeoSite Antizapret (база повреждена в репозитории)
-- Конфигурационный файл `02_transport.json` (не используется новыми ядрами xray-core)
-- Запрос на перезапись и сама перезапись конфигурационных файлов Xray, если они уже существуют на момент установки XKeen
-- Создание резервных копий Xray, так как теперь можно интерактивно установить предыдущую версию ядра параметром `-ux`. В связи с этим упразднены параметры запуска `-xb` и `-xbr`
+- Ability to install GeoSite Antizapret (the database is damaged in the repository)
+- Configuration file `02_transport.json` (not used by new xray-core kernels)
+- Request to overwrite and overwrite Xray configuration files if they already exist at the time of XKeen installation
+- Create Xray backups, since you can now interactively install a previous version of the kernel with the `-ux` option. In this regard, the launch options `-xb` and `-xbr` have been removed
 - Логирование процесса установки XKeen в директорию `/opt/var/log/xkeen` (на практике не использовалось)
-- Задачи планировщика по автообновлению XKeen/Xray. В связи с этим упразднены параметры запуска `-uac`, `-ukc`, `-uxc`, `-dac`, `-dkc` и `-dxc`
-- Параметры запуска: `-x` (заменён на `-ux`), `-rk` (заменён на `-rrk`), `-rx` (заменён на `-rrx`), `-rc` (не актуален)
+- XKeen/Xray auto-update scheduler tasks. In this regard, the launch options `-uac`, `-ukc`, `-uxc`, `-dac`, `-dkc` and `-dxc` have been removed
+- Launch options: `-x` (replaced by `-ux`), `-rk` (replaced by `-rrk`), `-rx` (replaced by `-rrx`), `-rc` (not relevant)

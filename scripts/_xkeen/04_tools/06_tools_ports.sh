@@ -117,7 +117,7 @@ ensure_web_ports() {
     normalize_ports "$ports"
 }
 
-# Функция обработки пользовательских портов
+# Custom Port Processing Function
 process_user_ports() {
     user_proxy_ports=""
     user_exclude_ports=""
@@ -159,13 +159,13 @@ process_user_ports() {
 
 add_ports_donor() {
     [ -z "$1" ] && {
-        echo -e "  ${red}Ошибка${reset}: список портов не может быть пустым"
+        echo -e "${red}Error${reset}: port list cannot be empty"
         return 1
     }
 
-    # конфликт
+    # conflict
     if ports_conflict_check "$file_port_proxying" "$file_port_exclude"; then
-        echo -e "  ${red}Ошибка${reset}: уже заданы исключённые порты"
+        echo -e "${red}Error${reset}: excluded ports already specified"
         return 1
     fi
 
@@ -183,7 +183,7 @@ add_ports_donor() {
 
     write_ports_file "$file_port_proxying" "$all_ports"
 
-    echo -e "  ${green}Порты проксирования обновлены${reset}"
+    echo -e "${green}Proxy ports updated${reset}"
 }
 
 dell_ports_donor() {
@@ -191,13 +191,13 @@ dell_ports_donor() {
     current_ports=$(read_ports_file "$file_port_proxying")
 
     [ -z "$current_ports" ] && {
-        echo -e "  ${yellow}Файл пуст${reset}"
+        echo -e "${yellow}File is empty${reset}"
         return
     }
 
     if [ -z "$ports_to_del" ]; then
         > "$file_port_proxying"
-        echo -e "  ${green}Все порты удалены${reset}"
+        echo -e "${green}All ports removed${reset}"
         return
     fi
 
@@ -209,17 +209,17 @@ dell_ports_donor() {
 
     write_ports_file "$file_port_proxying" "$new_ports"
 
-    echo -e "  ${green}Порты удалены${reset}"
+    echo -e "${green}Ports removed${reset}"
 }
 
 add_ports_exclude() {
     [ -z "$1" ] && {
-        echo -e "  ${red}Ошибка${reset}: список портов не может быть пустым"
+        echo -e "${red}Error${reset}: port list cannot be empty"
         return 1
     }
 
     if ports_conflict_check "$file_port_proxying" "$file_port_exclude"; then
-        echo -e "  ${red}Ошибка${reset}: уже заданы порты проксирования"
+        echo -e "${red}Error${reset}: proxy ports are already set"
         return 1
     fi
 
@@ -235,7 +235,7 @@ add_ports_exclude() {
 
     write_ports_file "$file_port_exclude" "$all_ports"
 
-    echo -e "  ${green}Порты исключений обновлены${reset}"
+    echo -e "${green}Exception ports updated${reset}"
 }
 
 dell_ports_exclude() {
@@ -243,13 +243,13 @@ dell_ports_exclude() {
     current_ports=$(read_ports_file "$file_port_exclude")
 
     [ -z "$current_ports" ] && {
-        echo -e "  ${yellow}Файл пуст${reset}"
+        echo -e "${yellow}File is empty${reset}"
         return
     }
 
     if [ -z "$ports_to_del" ]; then
         > "$file_port_exclude"
-        echo -e "  ${green}Все исключения удалены${reset}"
+        echo -e "${green}All exceptions removed${reset}"
         return
     fi
 
@@ -261,26 +261,26 @@ dell_ports_exclude() {
 
     write_ports_file "$file_port_exclude" "$new_ports"
 
-    echo -e "  ${green}Порты исключений удалены${reset}"
+    echo -e "${green}Exception ports removed${reset}"
 }
 
-# Получить список портов проксирования
+# Get a list of proxy ports
 get_ports_donor() {
     ports=$(read_ports_file "$file_port_proxying")
 
     if [ -z "$ports" ]; then
-        echo -e "  Прокси-клиент работает ${yellow}на всех портах${reset}"
+        echo -e "Proxy client running ${yellow}on all ports${reset}"
     else
         echo "$ports" | tr ',' '\n' | sed 's/^/     /'
     fi
 }
 
-# Получить список портов, исключённых из проксирования
+# Get a list of ports excluded from proxying
 get_ports_exclude() {
     ports=$(read_ports_file "$file_port_exclude")
 
     if [ -z "$ports" ]; then
-        echo -e "  Нет портов исключённых из проксирования"
+        echo -e "There are no ports excluded from proxying"
     else
         echo "$ports" | tr ',' '\n' | sed 's/^/     /'
     fi
@@ -289,7 +289,7 @@ get_ports_exclude() {
 migrate_ports_from_initd() {
     [ -f "$initd_file" ] || return
 
-    # Читаем старые значения
+    # Reading old values
     port_donor_val=$(
         awk -F= '/^port_donor=/{print $2; exit}' "$initd_file" | tr -d '"'
     )
@@ -303,7 +303,7 @@ migrate_ports_from_initd() {
 
     migrated=0
 
-    # --- Миграция port_donor ---
+    # --- Migration port_donor ---
     if [ -n "$port_donor_val" ]; then
 
         current_proxy=$(normalize_ports "$(read_ports_file "$file_port_proxying")")
@@ -318,7 +318,7 @@ migrate_ports_from_initd() {
         fi
     fi
 
-    # --- Миграция port_exclude ---
+    # --- Migration port_exclude ---
     if [ -n "$port_exclude_val" ]; then
 
         current_exclude=$(normalize_ports "$(read_ports_file "$file_port_exclude")")

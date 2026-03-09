@@ -1,4 +1,4 @@
-# Функция для проверки установки Xray
+# Function to check Xray installation
 
 info_xray() {
     if [ -f "$install_dir/xray" ]; then

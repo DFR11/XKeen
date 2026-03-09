@@ -1,4 +1,4 @@
-# Функция проверки доступности интернета
+# Internet availability check function
 test_connection() {
     result=1
 
@@ -8,12 +8,12 @@ test_connection() {
     fi
 
     if [ "$result" -eq 0 ]; then
-        printf "  ${red}Отсутствует${reset} интернет-соединение\n"
+        printf "${red}No${reset} internet connection\n"
         exit 1
     fi
 }
 
-# Функция загрузки
+# Download function
 download_with_check() {
     url="$1"
     output_file="$2"
@@ -37,21 +37,21 @@ download_with_check() {
     if [ -f "$output_file" ]; then
         size=$(wc -c < "$output_file" 2>/dev/null || echo 0)
         if [ "$size" -gt "$min_size" ]; then
-            return 0  # Успех
+            return 0  # Success
         fi
     fi
 
     rm -f "$output_file" 2>/dev/null
-    return 1  # Ошибка
+    return 1  # Error
 }
 
-# Функция проверки доступности Entware
+# Entware availability check feature
 test_entware() {
-    printf "  ${yellow}Проверка доступности${reset} репозитория Entware. Подождите, пожалуйста...\n"
+    printf "${yellow}Checking ${reset} availability of the Entware repository. Please wait...\n"
     repo_url=$(awk '/^src/ {print $3; exit}' /opt/etc/opkg.conf 2>/dev/null)
 
     if [ -z "$repo_url" ]; then
-        printf "  ${red}Не удалось${reset} определить используемый репозиторий Entware\n"
+        printf "${red}Failed${reset} to determine which Entware repository to use\n"
         exit 1
     fi
 
@@ -59,7 +59,7 @@ test_entware() {
     tmp_file="/tmp/pkg_check_$$"
 
     if download_with_check "$repo_url" "$tmp_file"; then
-        printf "  Репозиторий Entware ${green}доступен${reset}. Продолжаем...\n"
+        printf "Entware repository ${green}available${reset}. Let's continue...\n"
 
         opkg update >/dev/null 2>&1
         opkg upgrade >/dev/null 2>&1
@@ -68,24 +68,24 @@ test_entware() {
         rm -f "$tmp_file" 2>/dev/null
         return 0
     else
-        printf "  Репозиторий Entware ${red}недоступен${reset}\n"
+        printf "Entware repository ${red}unavailable${reset}\n"
         printf "  Укажите рабочее зеркало репозитория в файле ${yellow}/opt/etc/opkg.conf${reset}\n"
         exit 1
     fi
 }
 
-# Функция проверки доступности GitHub
+# GitHub Availability Checker Feature
 test_github() {
     use_direct="false"
     gh_proxy=""
     tmp_file="/tmp/gh_check_$$"
 
-    printf "  ${yellow}Проверка доступности${reset} GitHub. Подождите, пожалуйста...\n"
+    printf "${yellow}Check availability${reset} GitHub. Please wait...\n"
 
     if download_with_check "$zkeenip_url" "$tmp_file"; then
         use_direct="true"
         rm -f "$tmp_file" 2>/dev/null
-        printf "  GitHub ${green}доступен${reset}. Продолжаем...\n"
+        printf "GitHub ${green}available${reset}. Let's continue...\n"
         return 0
     fi
 
@@ -93,7 +93,7 @@ test_github() {
     if download_with_check "$proxied_url" "$tmp_file"; then
         gh_proxy="$gh_proxy1"
         rm -f "$tmp_file" 2>/dev/null
-        printf "  GitHub ${green}доступен через прокси${reset}. Продолжаем...\n"
+        printf "GitHub ${green}is available via proxy${reset}. Let's continue...\n"
         return 0
     fi
 
@@ -101,10 +101,10 @@ test_github() {
     if download_with_check "$proxied_url" "$tmp_file"; then
         gh_proxy="$gh_proxy2"
         rm -f "$tmp_file" 2>/dev/null
-        printf "  GitHub ${green}доступен через прокси${reset}. Продолжаем...\n"
+        printf "GitHub ${green}is available via proxy${reset}. Let's continue...\n"
         return 0
     fi
 
-    printf "  ${red}Ошибка${reset}: GitHub недоступен\n"
+    printf "${red}Error${reset}: GitHub is unavailable\n"
     exit 1
 }

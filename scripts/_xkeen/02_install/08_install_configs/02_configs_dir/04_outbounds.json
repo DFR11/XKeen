@@ -1,7 +1,7 @@
 {
-// Создайте файл по ссылке (поддерживается только TCP(RAW) транспорт):
+// Create a file using the link (only TCP(RAW) transport is supported):
 // https://corvus-malus.github.io/XKeen-Config-Generator/
 //
-// Исходящие подключения с любыми транспортами можете создать по ссылке:
+// You can create outgoing connections with any transports using the link:
 // https://zxc-rv.github.io/XKeen-UI/Outbound_Generator/
 }

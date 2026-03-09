@@ -1,6 +1,6 @@
-# Импорт модулей удаления
+# Importing uninstall modules
 
-# Модули удаления
+# Removal modules
 . "$xdelete_dir/01_delete_geosite.sh"
 . "$xdelete_dir/02_delete_geoip.sh"
 . "$xdelete_dir/03_delete_cron.sh"

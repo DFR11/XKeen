@@ -1,7 +1,7 @@
-# Импорт модулей конфигураций
+# Importing configuration modules
 	
-# Модуль конфигурации
+# Configuration module
 . "$xinstall_dir/08_install_configs/01_configs_install.sh"
 
-# Шаблоны конфигурации
+# Configuration templates
 . "$xinstall_dir/08_install_configs/02_configs_dir"

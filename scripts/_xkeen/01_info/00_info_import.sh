@@ -1,6 +1,6 @@
-# Импорт информационных модулей
+# Importing information modules
 
-# Модуль информации
+# Information module
 . "$xinfo_dir/01_info_variable.sh"
 . "$xinfo_dir/02_info_packages.sh"
 . "$xinfo_dir/03_info_cpu.sh"

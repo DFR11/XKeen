@@ -1,4 +1,4 @@
-# Функция для проверки установки Mihomo
+# Function to check Mihomo installation
 
 info_mihomo() {
     if [ -f "$install_dir/mihomo" ] && [ -f "$install_dir/yq" ]; then

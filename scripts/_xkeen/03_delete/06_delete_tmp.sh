@@ -1,4 +1,4 @@
-# Удаление временных файлов и директорий
+# Removing temporary files and directories
 delete_tmp() {
     [ -d "$tmp_dir_global/xkeen" ] && rm -rf "$tmp_dir_global/xkeen"
     [ -f "$cron_dir/root.tmp" ] && rm -f "$cron_dir/root.tmp"
@@ -15,21 +15,21 @@ delete_tmp() {
     fi
 
     echo
-    echo -e "  Очистка временных файлов ${green}выполнена${reset}"
+    echo -e "Temporary files cleared ${green}done${reset}"
 }
 
 delete_all() {
     echo
-    echo -e "  Удалить резервные копии и пользовательские настройки?"
+    echo -e "Delete backups and user settings?"
     echo -e "  ${yellow}$backups_dir${reset}"
     echo -e "  ${yellow}$xkeen_cfg${reset}"
     echo
-    echo "     1. Да, удалить"
-    echo "     0. Нет, оставить"
+    echo "1. Yes, delete"
+    echo "0. No, leave it"
     echo
 
     while true; do
-        read -r -p "  Ваш выбор: " choice
+        read -r -p "Your choice:" choice
         case "$choice" in
             1)
                 [ -d "$backups_dir" ] && rm -rf "$backups_dir"
@@ -40,7 +40,7 @@ delete_all() {
                 return 0
                 ;;
             *)
-                echo -e "  ${red}Некорректный ввод${reset}"
+                echo -e "${red}Invalid input${reset}"
                 ;;
         esac
     done

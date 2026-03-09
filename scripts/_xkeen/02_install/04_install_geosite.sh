@@ -1,8 +1,8 @@
-# Функция для установки и обновления GeoSite
+# Function for installing and updating GeoSite
 install_geosite() {
-    mkdir -p "$geo_dir" || { echo "Ошибка: Не удалось создать директорию $geo_dir"; exit 1; }
+    mkdir -p "$geo_dir" || { echo "Error: Failed to create directory $geo_dir"; exit 1; }
 
-    # Установка/обновление файла
+    # File installation/update
     process_geosite_file() {
         url="$1"
         filename="$2"
@@ -17,7 +17,7 @@ install_geosite() {
             return $?
         }
 
-        printf "  Загрузка %s...\n" "$display_name"
+        printf "Loading %s...\n" "$display_name"
 
         if [ "$use_direct" = "true" ]; then
             :
@@ -30,53 +30,53 @@ install_geosite() {
             :
         else
             rm -f "$temp_file"
-            printf "  ${red}Ошибка${reset}: не удалось загрузить %s\n" "$display_name"
+            printf "${red}Error${reset}: failed to load %s\n" "$display_name"
             return 1
         fi
 
-        # Проверка размера файла
+        # Checking file size
         actual_size=$(wc -c < "$temp_file")
         if [ "$actual_size" -lt "$min_size" ]; then
-            printf "  ${red}Ошибка${reset}: загруженный файл слишком мал (%s bytes) или повреждён\n  Невозможно обновить. Оставляем старый файл\n\n" "$actual_size"
+            printf "${red}Error${reset}: the uploaded file is too small (%s bytes) or damaged\nCannot be updated. We leave the old file\n\n" "$actual_size"
             rm -f "$temp_file"
             return 1
         fi
 
-        # Проверка на HTML
+        # HTML validation
         grep -qi "<html" "$temp_file"
         if [ $? -eq 0 ]; then
-            printf "  ${red}Ошибка${reset}: получена HTML-страница вместо dat-файла\n  Невозможно обновить. Оставляем старый файл\n\n"
+            printf "${red}Error${reset}: HTML page received instead of dat file\n Unable to update. We leave the old file\n\n"
             rm -f "$temp_file"
             return 1
         fi
 
-        # Безопасная замена
+        # Safe replacement
         if mv "$temp_file" "$geo_dir/$filename.new"; then
             mv -f "$geo_dir/$filename.new" "$geo_dir/$filename"
         fi
 
         if [ "$update_flag" = "true" ]; then
-            printf "  %s ${green}успешно обновлён${reset}\n\n" "$display_name"
+            printf "%s ${green}updated successfully${reset}\n\n" "$display_name"
         else
-            printf "  %s ${green}успешно установлен${reset}\n\n" "$display_name"
+            printf "%s ${green}installed successfully${reset}\n\n" "$display_name"
         fi
 
         return 0
     }
 
-    # Установка GeoSite Re:filter
+    # Installing GeoSite Re:filter
     if [ "$install_refilter_geosite" = "true" ] || [ "$update_refilter_geosite" = "true" ]; then
         process_geosite_file "$refilter_url" "geosite_refilter.dat" \
             "GeoSite Re:filter" "$update_refilter_geosite"
     fi
 
-    # Установка GeoSite V2Fly
+    # Install GeoSite V2Fly
     if [ "$install_v2fly_geosite" = "true" ] || [ "$update_v2fly_geosite" = "true" ]; then
         process_geosite_file "$v2fly_url" "geosite_v2fly.dat" \
             "GeoSite V2Fly" "$update_v2fly_geosite"
     fi
 
-    # Установка GeoSite ZKeen
+    # Installing GeoSite ZKeen
     if [ "$install_zkeen_geosite" = "true" ] || [ "$update_zkeen_geosite" = "true" ]; then
         datfile="geosite_zkeen.dat"
 
@@ -84,7 +84,7 @@ install_geosite() {
         process_geosite_file "$zkeen_url" "$datfile" \
             "GeoSite ZKeen" "$update_zkeen_geosite"
 
-        # Создание симлинков для совместимости
+        # Creating symlinks for compatibility
         if [ "$datfile" = "geosite_zkeen.dat" ]; then
             rm -f "$geo_dir/zkeen.dat"
             ln -sf "$geo_dir/geosite_zkeen.dat" "$geo_dir/zkeen.dat"

@@ -1,4 +1,4 @@
-# Удаление всех конфигураций Xray
+# Removing all Xray configurations
 
 delete_configs() {
     if [ -d "$install_conf_dir" ]; then

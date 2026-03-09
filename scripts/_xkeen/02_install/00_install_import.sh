@@ -1,6 +1,6 @@
-# Импорт модулей установки
+# Importing installation modules
 
-# Модули установки
+# Installation modules
 . "$xinstall_dir/01_install_packages.sh"
 . "$xinstall_dir/02_install_xray.sh"
 . "$xinstall_dir/02_install_mihomo.sh"

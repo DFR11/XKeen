@@ -1,3 +1,3 @@
-- При проксировании DNS с помощью XKeen, в профиле "Политика по умолчанию" отсутствует интернет, создайте пользовательсую политкику вместо этого профиля
-- При включенном проксировании, во встроенной политике "Без доступа в интернет" интернет продолжает работать, решения нет
-- При отключении протокола IPv6 средствами XKeen, не работает встроенный в Keenetic прокси клиент socks5, решения нет
+- When proxying DNS using XKeen, there is no internet in the "Default Policy" profile, create a custom policy instead of this profile
+- When proxying is enabled, in the built-in policy "No Internet access" the Internet continues to work, there is no solution
+- When disabling the IPv6 protocol using XKeen, the socks5 client built into the Keenetic proxy does not work, there is no solution

@@ -1,13 +1,13 @@
-# Функция для установки задач Cron
+# Function for installing Cron tasks
 install_cron() {
     cron_entry=
 
-    # Добавление задачи Cron для обновления GeoFile
+    # Adding a Cron Job to Update GeoFile
     if [ -n "$choice_geofile_cron_time" ]; then
         cron_entry="$choice_geofile_cron_time $install_dir/xkeen -ug"
     fi
 
-    # Если есть записи для задач Cron, то сохраняем их
+    # If there are entries for Cron tasks, then save them
     if [ -n "$cron_entry" ] || [ -n "$choice_canel_cron_select" ]; then
         cron_file_path="$cron_dir/$cron_file"
 

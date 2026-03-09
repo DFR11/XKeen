@@ -1,48 +1,48 @@
-# Загрузка Mihomo
+# Loading Mihomo
 download_mihomo() {
     while true; do
-        printf "  ${green}Запрос информации${reset} о релизах ${yellow}Mihomo${reset}\n"
+        printf "${green}Request information${reset} about releases ${yellow}Mihomo${reset}\n"
         
-        # Получаем список релизов через GitHub API
+        # Getting a list of releases via GitHub API
         RELEASE_TAGS=$(curl --connect-timeout 10 $curl_timeout -s "${mihomo_api_url}?per_page=20" 2>/dev/null | jq -r '.[] | select(.prerelease == false) | .tag_name' | head -n 8)
         
         if [ -z "$RELEASE_TAGS" ]; then
             echo
-            printf "  ${red}Нет доступа${reset} к ${yellow}GitHub API${reset}. Пробуем ${yellow}jsDelivr${reset}...\n"
+            printf "${red}No access${reset} to ${yellow}GitHub API${reset}. Let's try ${yellow}jsDelivr${reset}...\n"
             
-            # Получаем список релизов через jsDelivr
+            # Getting a list of releases via jsDelivr
             RELEASE_TAGS=$(curl --connect-timeout 10 $curl_timeout -s "$mihomo_jsd_url" 2>/dev/null | jq -r '.versions[]' | head -n 8)
             
             if [ -z "$RELEASE_TAGS" ]; then
                 echo
-                printf "  ${red}Нет доступа${reset} к ${yellow}jsDelivr${reset}\n"
+                printf "${red}No access${reset} to ${yellow}jsDelivr${reset}\n"
                 echo
                 printf "  ${red}Ошибка${reset}: Не удалось получить список релизов ни через ${yellow}GitHub API${reset}, ни через ${yellow}jsDelivr${reset}\n  Проверьте соединение с интернетом или повторите позже\n  Если ошибка сохраняется, воспользуйтесь возможностью OffLine установки:\n  https://github.com/jameszeroX/XKeen/blob/main/OffLine_install.md\n"
                 echo
                 exit 1
             fi
             echo
-            printf "  Список релизов получен с использованием ${yellow}jsDelivr${reset}:\n"
+            printf "List of releases obtained using ${yellow}jsDelivr${reset}:\n"
             USE_JSDELIVR="true"
         else
             echo
-            printf "  Список релизов получен с использованием ${yellow}GitHub API${reset}:\n"
+            printf "List of releases retrieved using ${yellow}GitHub API${reset}:\n"
         fi
 
         echo
         echo "$RELEASE_TAGS" | awk '{printf "    %2d. %s\n", NR, $0}'
         echo
-        echo "     9. Ручной ввод версии"
+        echo "9. Manual version entry"
         echo
-        echo "     0. Пропустить загрузку Mihomo"
+        echo "0. Skip Mihomo download"
 
-        printf "\n  Введите порядковый номер релиза (0 - пропустить, 9 - ручной ввод): "
+        printf "\nEnter the release serial number (0 - skip, 9 - manual entry):"
         read -r choice
 
         case "$choice" in
             [0-9]) ;;
             *) 
-                printf "  ${red}Некорректный${reset} ввод. Пожалуйста, введите число\n"
+                printf "${red}Invalid ${reset} input. Please enter a number\n"
                 sleep 1
                 continue
                 ;;
@@ -50,15 +50,15 @@ download_mihomo() {
 
         if [ "$choice" = "0" ]; then
             bypass_mihomo="true"
-            printf "  Загрузка Mihomo ${yellow}пропущена${reset}\n"
+            printf "Loading Mihomo ${yellow}skipped${reset}\n"
             return
         fi
 
         if [ "$choice" = "9" ]; then
-            printf "  Введите версию Mihomo для загрузки (например: v1.19.6): "
+            printf "Enter the Mihomo version to download (for example: v1.19.6):"
             read -r version_selected
             if [ -z "$version_selected" ]; then
-                printf "  ${red}Ошибка${reset}: Версия не может быть пустой\n"
+                printf "${red}Error${reset}: Version cannot be empty\n"
                 sleep 1
                 continue
             fi
@@ -69,7 +69,7 @@ download_mihomo() {
         else
             version_selected=$(echo "$RELEASE_TAGS" | awk -v line="$choice" 'NR == line {print $0; exit}')
             if [ -z "$version_selected" ]; then
-                printf "  Выбранный номер ${red}вне диапазона.${reset} Пожалуйста, попробуйте снова\n"
+                printf "Selected number ${red}out of range.${reset} Please try again\n"
                 sleep 1
                 continue
             fi
@@ -107,7 +107,7 @@ download_mihomo() {
         esac
 
         if [ -z "$download_url" ] || [ -z "$download_yq" ]; then
-            printf "  ${red}Ошибка${reset}: Не удалось получить URL для загрузки Mihomo\n"
+            printf "${red}Error${reset}: Failed to obtain Mihomo download URL\n"
             exit 1
         fi
 
@@ -122,7 +122,7 @@ download_mihomo() {
             download_yq="$gh_proxy/$download_yq"
         fi
 
-        printf "  ${yellow}Проверка${reset} доступности версии $version_selected...\n"
+        printf "${yellow}Check${reset} version availability $version_selected...\n"
 
         check_url_availability() {
             url=$1
@@ -138,7 +138,7 @@ download_mihomo() {
             curl_exit_code=$?
 
             if [ "$curl_exit_code" -eq 0 ] && [ "$http_status" = "405" ]; then
-                # Метод HEAD не разрешен, пробуем GET с Range
+                # The HEAD method is not allowed, try GET with Range
                 http_status=$(curl --connect-timeout "$timeout" $curl_timeout \
                                   -s \
                                   -L \
@@ -150,28 +150,28 @@ download_mihomo() {
             fi
 
             if [ "$curl_exit_code" -eq 28 ]; then
-                printf "  ${red}Таймаут${reset} при проверке\n"
+                printf "${red}Timeout${reset} during check\n"
                 return 1
             elif [ "$curl_exit_code" -ne 0 ]; then
-                printf "  ${red}Ошибка curl ($curl_exit_code)${reset} при проверке\n"
+                printf "${red}Curl error ($curl_exit_code)${reset} while checking\n"
                 return 1
             fi
 
             case "$http_status" in
                 2[0-9][0-9])
-                    printf "  Файл ${green}доступен${reset}\n"
+                    printf "File ${green}available${reset}\n"
                     return 0
                     ;;
                 404)
-                    printf "  Файл ${red}не найден${reset} (404)\n"
+                    printf "File ${red}not found${reset} (404)\n"
                     return 2
                     ;;
                 403)
-                    printf "  ${red}Доступ запрещен${reset} (403)\n"
+                    printf "${red}Access denied${reset} (403)\n"
                     return 2
                     ;;
                 000)
-                    printf "  ${red}Нет соединения${reset}\n"
+                    printf "${red}No connection${reset}\n"
                     return 1
                     ;;
                 *)
@@ -181,16 +181,16 @@ download_mihomo() {
             esac
         }
 
-        # Проверка доступности версии Mihomo
+        # Checking Mihomo version availability
         if ! check_url_availability "$download_url" 10; then
             rm -f "$mihomo_dist"
-            printf "  ${red}Ошибка${reset}: Версия Mihomo $version_selected недоступна\n"
+            printf "${red}Error${reset}: Mihomo version $version_selected is not available\n"
             continue
         fi
 
-        printf "  ${yellow}Выполняется загрузка${reset} парсера конфигурационных файлов Mihomo - Yq\n"
+        printf "${yellow}Loading ${reset} of the Mihomo configuration file parser - Yq\n"
 
-        # Загрузка Yq
+        # Loading Yq
         if check_url_availability "$download_yq" 10; then
             if curl --connect-timeout 10 $curl_timeout \
                    -fL \
@@ -199,20 +199,20 @@ download_mihomo() {
                 if [ -s "$yq_dist" ]; then
                     mv "$yq_dist" "$install_dir/yq"
                     chmod +x "$install_dir/yq"
-                    printf "  Yq ${green}успешно загружен и установлен${reset}\n"
+                    printf "Yq ${green}successfully downloaded and installed${reset}\n"
                 else
-                    printf "  ${red}Ошибка${reset}: Загруженный файл Yq поврежден\n"
+                    printf "${red}Error${reset}: The downloaded Yq file is corrupt\n"
                 fi
             else
-                printf "  ${red}Ошибка${reset}: Не удалось загрузить Yq\n"
+                printf "${red}Error${reset}: Failed to load Yq\n"
             fi
         else
-            printf "  ${yellow}Предупреждение${reset}: Yq недоступен для загрузки, продолжение без него\n"
+            printf "${yellow}Warning${reset}: Yq is not available for download, continue without it\n"
         fi
 
-        printf "  ${yellow}Выполняется загрузка${reset} выбранной версии Mihomo\n"
+        printf "${yellow}Loading${reset} of the selected version of Mihomo\n"
 
-        # Загрузка Mihomo
+        # Loading Mihomo
         if curl --connect-timeout 10 $curl_timeout \
                -fL \
                -o "$mihomo_dist" \
@@ -221,21 +221,21 @@ download_mihomo() {
             if [ -s "$mihomo_dist" ]; then
                 if head -c 100 "$mihomo_dist" 2>/dev/null | grep -iq "<!DOCTYPE html\|<html\|Error\|404\|Not Found"; then
                     rm -f "$mihomo_dist"
-                    printf "  ${red}Ошибка${reset}: Получена HTML страница ошибки вместо файла Mihomo\n"
+                    printf "${red}Error${reset}: Received HTML error page instead of Mihomo file\n"
                     continue
                 fi
                 
                 mv "$mihomo_dist" "$mtmp_dir/mihomo.$extension"
-                printf "  Mihomo ${green}успешно загружен${reset}\n"
+                printf "Mihomo ${green}successfully loaded${reset}\n"
                 return 0
             else
                 rm -f "$mihomo_dist"
-                printf "  ${red}Ошибка${reset}: Загруженный файл Mihomo поврежден\n"
+                printf "${red}Error${reset}: The downloaded Mihomo file is corrupt\n"
                 continue
             fi
         else
             rm -f "$mihomo_dist"
-            printf "  ${red}Ошибка${reset}: Не удалось загрузить Mihomo $version_selected\n"
+            printf "${red}Error${reset}: Failed to load Mihomo $version_selected\n"
             continue
         fi
     done

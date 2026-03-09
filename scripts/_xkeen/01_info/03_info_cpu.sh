@@ -1,4 +1,4 @@
-# Функция для получения информации о процессоре
+# Function for obtaining information about the processor
 info_cpu() {
     if command -v opkg >/dev/null 2>&1; then
         opkg_arch=$(opkg print-architecture | awk '!/all/ {print $2; exit}' | cut -d- -f1)
@@ -11,6 +11,6 @@ info_cpu() {
         esac
     fi
 
-    # Получение информации о архитектуре из файла состояния (status_file)
+    # Retrieving architecture information from the status file (status_file)
     status_architecture=$(grep -m 1 '^Architecture:' "${status_file}" | awk '{print $2}')
 }
